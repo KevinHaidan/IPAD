@@ -47,6 +47,7 @@
             background-color: #f0ebe4;
         }
 
+        /* ===== 分類欄 ===== */
         .category-wrapper {
             background: white;
             padding: 10px 0 12px 0;
@@ -70,6 +71,9 @@
             overflow-y: hidden;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
         }
 
         .category-scroll::-webkit-scrollbar {
@@ -115,6 +119,145 @@
             border-radius: 4px;
         }
 
+        /* ===== ✅ 目錄上的摺疊用餐選單 ===== */
+        .dining-dropdown-wrapper {
+            -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+            position: relative;
+            margin-left: 4px;
+        }
+
+        .dining-dropdown-toggle {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px 4px 8px;
+            border-radius: 16px;
+            border: 2px solid #b8860b;
+            background: #fcf8f0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            color: #b8860b;
+            -webkit-tap-highlight-color: transparent;
+            white-space: nowrap;
+        }
+
+        .dining-dropdown-toggle:active {
+            background: #f5efe0;
+        }
+
+        .dining-dropdown-toggle .arrow {
+            font-size: 11px;
+            -webkit-transition: -webkit-transform 0.3s;
+            transition: transform 0.3s;
+        }
+
+        .dining-dropdown-toggle .arrow.open {
+            -webkit-transform: rotate(180deg);
+            transform: rotate(180deg);
+        }
+
+        .dining-dropdown-toggle .selected-label {
+            max-width: 50px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            font-weight: 600;
+        }
+
+        .dining-dropdown-menu {
+            display: none;
+            position: absolute;
+            top: 32px;
+            right: 0;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #b8860b;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+            padding: 10px 12px;
+            z-index: 20;
+            min-width: 220px;
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .dining-dropdown-menu.open {
+            display: block;
+        }
+
+        .dining-dropdown-menu .label {
+            font-size: 12px;
+            color: #999;
+            font-weight: 600;
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .dining-dropdown-menu .options-grid {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+
+        .dining-dropdown-menu .dining-btn {
+            padding: 4px 10px;
+            border-radius: 14px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #666;
+            -webkit-transition: all 0.15s;
+            transition: all 0.15s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .dining-dropdown-menu .dining-btn:active {
+            -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        .dining-dropdown-menu .dining-btn.active {
+            border-color: #b8860b;
+            background: #b8860b;
+            color: white;
+        }
+
+        .dining-dropdown-menu .dining-btn.table-btn {
+            min-width: 34px;
+            text-align: center;
+        }
+
+        .dining-dropdown-menu .dining-btn.dine-in {
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+
+        .dining-dropdown-menu .dining-btn.dine-in.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .dining-dropdown-menu .dining-btn.takeout {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
+
+        .dining-dropdown-menu .dining-btn.takeout.active {
+            background: #e67e22;
+            color: white;
+            border-color: #e67e22;
+        }
+
         .category-scroll-hint {
             -webkit-flex: 0 0 auto;
             flex: 0 0 auto;
@@ -145,155 +288,6 @@
             margin: 20px 0 12px 0;
             padding-left: 10px;
             border-left: 4px solid #b8860b;
-        }
-
-        /* ===== 摺疊用餐選項 ===== */
-        .dining-collapse-wrapper {
-            background: white;
-            border-radius: 12px;
-            border: 2px solid #b8860b;
-            margin: 16px 0 20px 0;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(184, 134, 11, 0.15);
-        }
-
-        .dining-toggle {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-box-align: center;
-            -webkit-align-items: center;
-            align-items: center;
-            -webkit-box-pack: justify;
-            -webkit-justify-content: space-between;
-            justify-content: space-between;
-            padding: 12px 16px;
-            background: #fcf8f0;
-            cursor: pointer;
-            -webkit-user-select: none;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .dining-toggle:active {
-            background: #f5efe0;
-        }
-
-        .dining-toggle-left {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-box-align: center;
-            -webkit-align-items: center;
-            align-items: center;
-            gap: 10px;
-            font-size: 16px;
-            font-weight: 600;
-            color: #3d2c1e;
-        }
-
-        .dining-toggle-left .icon {
-            font-size: 20px;
-        }
-
-        .dining-toggle .arrow {
-            font-size: 18px;
-            color: #b8860b;
-            -webkit-transition: -webkit-transform 0.3s;
-            transition: transform 0.3s;
-        }
-
-        .dining-toggle .arrow.open {
-            -webkit-transform: rotate(180deg);
-            transform: rotate(180deg);
-        }
-
-        .dining-toggle .selected-display {
-            font-size: 14px;
-            color: #b8860b;
-            font-weight: 600;
-            background: #f0ebe4;
-            padding: 2px 12px;
-            border-radius: 12px;
-            margin-left: 8px;
-        }
-
-        .dining-collapse-body {
-            padding: 12px 16px 16px 16px;
-            background: white;
-            display: none;
-        }
-
-        .dining-collapse-body.open {
-            display: block;
-        }
-
-        .dining-collapse-body .label {
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .dining-options-grid {
-            display: -webkit-box;
-            display: -webkit-flex;
-            display: flex;
-            -webkit-flex-wrap: wrap;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-
-        .dining-btn {
-            padding: 6px 14px;
-            border-radius: 20px;
-            border: 2px solid #ddd;
-            background: white;
-            font-size: 14px;
-            font-weight: 500;
-            cursor: pointer;
-            color: #666;
-            -webkit-transition: all 0.2s;
-            transition: all 0.2s;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .dining-btn:active {
-            -webkit-transform: scale(0.95);
-            transform: scale(0.95);
-        }
-
-        .dining-btn.active {
-            border-color: #b8860b;
-            background: #b8860b;
-            color: white;
-        }
-
-        .dining-btn.table-btn {
-            min-width: 40px;
-            text-align: center;
-        }
-
-        .dining-btn.dine-in {
-            border-color: #2e7d32;
-            color: #2e7d32;
-        }
-
-        .dining-btn.dine-in.active {
-            background: #2e7d32;
-            color: white;
-            border-color: #2e7d32;
-        }
-
-        .dining-btn.takeout {
-            border-color: #e67e22;
-            color: #e67e22;
-        }
-
-        .dining-btn.takeout.active {
-            background: #e67e22;
-            color: white;
-            border-color: #e67e22;
         }
 
         .menu-item {
@@ -1010,15 +1004,19 @@
             .menu-item-name {
                 font-size: 15px;
             }
-            .dining-btn {
+            .dining-dropdown-toggle {
                 font-size: 12px;
-                padding: 4px 10px;
+                padding: 3px 8px 3px 6px;
             }
-            .dining-toggle {
-                padding: 10px 12px;
+            .dining-dropdown-toggle .selected-label {
+                max-width: 35px;
             }
-            .dining-toggle-left {
-                font-size: 14px;
+            .dining-dropdown-menu .dining-btn {
+                font-size: 12px;
+                padding: 3px 8px;
+            }
+            .dining-dropdown-menu .dining-btn.table-btn {
+                min-width: 30px;
             }
         }
     </style>
@@ -1031,6 +1029,7 @@
         </div>
     </header>
 
+    <!-- ===== 分類欄 ===== -->
     <div class="category-wrapper" id="categoryWrapper">
         <div class="category-scroll" id="categoryScroll">
             <a href="#cat-招牌必點" class="category-tab" data-category="招牌必點">招牌必點</a>
@@ -1040,13 +1039,27 @@
             <a href="#cat-湯品" class="category-tab" data-category="湯品">湯品</a>
             <a href="#cat-主食" class="category-tab" data-category="主食">主食</a>
             <a href="#cat-飲品" class="category-tab" data-category="飲品">飲品</a>
+
+            <!-- ✅ 摺疊用餐選單（放在飲品右邊） -->
+            <div class="dining-dropdown-wrapper" id="diningDropdownWrapper">
+                <div class="dining-dropdown-toggle" id="diningToggle">
+                    <span>📍</span>
+                    <span class="selected-label" id="selectedDiningLabel">桌號</span>
+                    <span class="arrow" id="diningArrow">▼</span>
+                </div>
+                <div class="dining-dropdown-menu" id="diningMenu">
+                    <div class="label">選擇桌號或用餐方式</div>
+                    <div class="options-grid" id="diningOptionsGrid">
+                        <!-- 桌號 1~12 用 JS 產生 -->
+                    </div>
+                </div>
+            </div>
+
             <span class="category-scroll-hint">›››</span>
         </div>
     </div>
 
-    <div class="menu-section" id="menuSection">
-        <!-- ✅ 摺疊用餐選項會用 JS 插入到「飲品」分類前面 -->
-    </div>
+    <div class="menu-section" id="menuSection"></div>
 
     <div class="cart-bar" id="cartBar">
         <div class="cart-left">
@@ -1224,7 +1237,6 @@
         var lastOrderRemark = '';
         var lastDiningOption = '';
 
-        // ✅ 用餐選項
         var selectedDining = '';
 
         var API_URL = 'https://exalted-fax-barrier.ngrok-free.dev/api';
@@ -1264,38 +1276,87 @@
         }
 
         // ============================================================
-        // ✅ 產生摺疊用餐選項 HTML
+        // ✅ 產生目錄摺疊選單的按鈕
         // ============================================================
-        function getDiningCollapseHTML() {
-            var tableBtns = '';
+        function initDiningDropdown() {
+            var grid = document.getElementById('diningOptionsGrid');
+            var html = '';
+
             for (var i = 1; i <= 12; i++) {
-                tableBtns += '<button class="dining-btn table-btn" data-value="' + i + '">' + i + '</button>';
+                html += '<button class="dining-btn table-btn" data-value="' + i + '">' + i + '</button>';
+            }
+            html += '<button class="dining-btn dine-in" data-value="內用">🏠內用</button>';
+            html += '<button class="dining-btn takeout" data-value="外帶">🛍️外帶</button>';
+
+            grid.innerHTML = html;
+
+            // 摺疊開關
+            var toggle = document.getElementById('diningToggle');
+            var menu = document.getElementById('diningMenu');
+            var arrow = document.getElementById('diningArrow');
+
+            toggle.addEventListener('click', function(e) {
+                e.stopPropagation();
+                menu.classList.toggle('open');
+                arrow.classList.toggle('open');
+            });
+
+            // 點擊外面關閉
+            document.addEventListener('click', function() {
+                menu.classList.remove('open');
+                arrow.classList.remove('open');
+            });
+
+            // 按鈕事件
+            var buttons = grid.querySelectorAll('.dining-btn');
+            var label = document.getElementById('selectedDiningLabel');
+
+            for (var j = 0; j < buttons.length; j++) {
+                (function(btn) {
+                    btn.addEventListener('click', function(e) {
+                        e.stopPropagation();
+
+                        // 清除所有 active
+                        var allBtns = grid.querySelectorAll('.dining-btn');
+                        for (var k = 0; k < allBtns.length; k++) {
+                            allBtns[k].classList.remove('active');
+                        }
+                        this.classList.add('active');
+                        selectedDining = this.getAttribute('data-value');
+
+                        // 更新標籤
+                        var displayText = selectedDining;
+                        if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
+                            displayText = '桌' + selectedDining;
+                        }
+                        label.textContent = displayText;
+
+                        // 自動關閉下拉
+                        menu.classList.remove('open');
+                        arrow.classList.remove('open');
+                    });
+                })(buttons[j]);
             }
 
-            return `
-                <div class="dining-collapse-wrapper" id="diningCollapse">
-                    <div class="dining-toggle" id="diningToggle">
-                        <div class="dining-toggle-left">
-                            <span class="icon">📍</span>
-                            <span>用餐方式</span>
-                            <span class="selected-display" id="selectedDiningDisplay">未選擇</span>
-                        </div>
-                        <span class="arrow" id="diningArrow">▼</span>
-                    </div>
-                    <div class="dining-collapse-body" id="diningBody">
-                        <div class="label">選擇桌號或用餐方式：</div>
-                        <div class="dining-options-grid" id="diningOptionsGrid">
-                            ${tableBtns}
-                            <button class="dining-btn dine-in" data-value="內用">🏠 內用</button>
-                            <button class="dining-btn takeout" data-value="外帶">🛍️ 外帶</button>
-                        </div>
-                    </div>
-                </div>
-            `;
+            // 如果已經有選擇，恢復顯示
+            if (selectedDining) {
+                var displayText = selectedDining;
+                if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
+                    displayText = '桌' + selectedDining;
+                }
+                label.textContent = displayText;
+
+                var allBtns = grid.querySelectorAll('.dining-btn');
+                for (var m = 0; m < allBtns.length; m++) {
+                    if (allBtns[m].getAttribute('data-value') === selectedDining) {
+                        allBtns[m].classList.add('active');
+                    }
+                }
+            }
         }
 
         // ============================================================
-        // ✅ 渲染餐點（把摺疊欄位插在「飲品」前面）
+        // 渲染餐點
         // ============================================================
         function renderMenu() {
             var section = document.getElementById('menuSection');
@@ -1307,21 +1368,9 @@
             }
 
             var html = '';
-
-            // ✅ 在「飲品」分類前面插入摺疊用餐選項
-            var diningHTML = getDiningCollapseHTML();
-            var diningInserted = false;
-
             for (var ci = 0; ci < categories.length; ci++) {
                 var catName = categories[ci];
                 var items = grouped[catName] || [];
-
-                // 如果遇到「飲品」，先插入用餐選項（只插一次）
-                if (catName === '飲品' && !diningInserted) {
-                    html += diningHTML;
-                    diningInserted = true;
-                }
-
                 html += '<div class="menu-section-title" id="cat-' + catName + '">' + catName + '</div>';
                 for (var j = 0; j < items.length; j++) {
                     var item = items[j];
@@ -1349,86 +1398,7 @@
                     html += '</div>';
                 }
             }
-
             section.innerHTML = html;
-
-            // ✅ 重新綁定摺疊事件 & 用餐按鈕事件
-            initDiningCollapse();
-            initDiningButtons();
-        }
-
-        // ============================================================
-        // ✅ 摺疊功能
-        // ============================================================
-        function initDiningCollapse() {
-            var toggle = document.getElementById('diningToggle');
-            var body = document.getElementById('diningBody');
-            var arrow = document.getElementById('diningArrow');
-
-            if (!toggle || !body) return;
-
-            // 預設展開
-            body.classList.add('open');
-            arrow.classList.add('open');
-
-            toggle.addEventListener('click', function() {
-                body.classList.toggle('open');
-                arrow.classList.toggle('open');
-            });
-        }
-
-        // ============================================================
-        // ✅ 用餐選項按鈕
-        // ============================================================
-        function initDiningButtons() {
-            var buttons = document.querySelectorAll('#diningOptionsGrid .dining-btn');
-            var display = document.getElementById('selectedDiningDisplay');
-
-            for (var i = 0; i < buttons.length; i++) {
-                (function(btn) {
-                    btn.addEventListener('click', function() {
-                        // 清除所有 active
-                        var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
-                        for (var j = 0; j < allBtns.length; j++) {
-                            allBtns[j].classList.remove('active');
-                        }
-                        this.classList.add('active');
-                        selectedDining = this.getAttribute('data-value');
-
-                        // 更新顯示
-                        var displayText = selectedDining;
-                        if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
-                            displayText = '桌 ' + selectedDining;
-                        }
-                        display.textContent = displayText;
-
-                        // 自動收起摺疊
-                        var body = document.getElementById('diningBody');
-                        var arrow = document.getElementById('diningArrow');
-                        if (body && arrow) {
-                            body.classList.remove('open');
-                            arrow.classList.remove('open');
-                        }
-                    });
-                })(buttons[i]);
-            }
-
-            // 如果已經有選擇，恢復顯示
-            if (selectedDining) {
-                var displayText = selectedDining;
-                if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
-                    displayText = '桌 ' + selectedDining;
-                }
-                display.textContent = displayText;
-
-                // 高亮對應按鈕
-                var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
-                for (var k = 0; k < allBtns.length; k++) {
-                    if (allBtns[k].getAttribute('data-value') === selectedDining) {
-                        allBtns[k].classList.add('active');
-                    }
-                }
-            }
         }
 
         // ============================================================
@@ -1641,7 +1611,6 @@
         document.getElementById('submitOrderBtn').addEventListener('click', function() {
             if (Object.keys(cart).length === 0) return;
 
-            // ✅ 檢查是否已選擇用餐方式
             if (!selectedDining) {
                 alert('⚠️ 請先選擇用餐方式（桌號 / 內用 / 外帶）');
                 return;
@@ -1710,13 +1679,12 @@
                     selectedDining = '';
                     document.getElementById('orderRemark').value = '';
 
-                    // 清除用餐選項的高亮 & 顯示
+                    // 清除選項
                     var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
                     for (var p = 0; p < allBtns.length; p++) {
                         allBtns[p].classList.remove('active');
                     }
-                    var display = document.getElementById('selectedDiningDisplay');
-                    if (display) display.textContent = '未選擇';
+                    document.getElementById('selectedDiningLabel').textContent = '桌號';
 
                     updateAllUI();
                     renderMenu();
@@ -1810,6 +1778,7 @@
             syncSoldOutFromServer();
             renderMenu();
             updateAllUI();
+            initDiningDropdown();
             initCategoryTabs();
 
             var header = document.getElementById('mainHeader');
