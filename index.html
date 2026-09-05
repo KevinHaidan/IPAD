@@ -573,6 +573,83 @@
             border: none;
         }
 
+        /* ===== 桌號 / 內用外帶 選擇區 ===== */
+        .dining-area {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            border: 1px solid #f0ebe4;
+        }
+
+        .dining-area label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #3d2c1e;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .dining-options {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-flex-wrap: wrap;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .dining-btn {
+            padding: 6px 14px;
+            border-radius: 20px;
+            border: 2px solid #ddd;
+            background: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            color: #666;
+            -webkit-transition: all 0.2s;
+            transition: all 0.2s;
+        }
+
+        .dining-btn:active {
+            -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        .dining-btn.active {
+            border-color: #b8860b;
+            background: #b8860b;
+            color: white;
+        }
+
+        .dining-btn.table-btn {
+            min-width: 44px;
+            text-align: center;
+        }
+
+        .dining-btn.dine-in {
+            border-color: #2e7d32;
+            color: #2e7d32;
+        }
+
+        .dining-btn.dine-in.active {
+            background: #2e7d32;
+            color: white;
+            border-color: #2e7d32;
+        }
+
+        .dining-btn.takeout {
+            border-color: #e67e22;
+            color: #e67e22;
+        }
+
+        .dining-btn.takeout.active {
+            background: #e67e22;
+            color: white;
+            border-color: #e67e22;
+        }
+
         .remark-area {
             background: white;
             border-radius: 12px;
@@ -834,6 +911,19 @@
             color: #3d2c1e;
         }
 
+        .confirm-dining-info {
+            background: #f8f5f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #3d2c1e;
+        }
+
+        .confirm-dining-info strong {
+            color: #b8860b;
+        }
+
         @media (max-width: 380px) {
             .category-tab {
                 font-size: 13px;
@@ -847,6 +937,10 @@
             }
             .menu-item-name {
                 font-size: 15px;
+            }
+            .dining-btn {
+                font-size: 12px;
+                padding: 4px 10px;
             }
         }
     </style>
@@ -888,6 +982,7 @@
         <button class="cart-checkout-btn" id="viewCartBtn" disabled>查看購物車</button>
     </div>
 
+    <!-- ===== 購物車頁面 ===== -->
     <div id="cartPage">
         <div class="cart-header">
             <div class="logo-small">
@@ -900,16 +995,42 @@
             <span style="width:40px;"></span>
         </div>
         <div id="cartItemsList"></div>
+
+        <!-- ✅ 桌號 / 內用外帶 選擇 -->
+        <div class="dining-area">
+            <label>📍 用餐方式</label>
+            <div class="dining-options" id="diningOptions">
+                <!-- 桌號 1~12 -->
+                <button class="dining-btn table-btn" data-value="1">1</button>
+                <button class="dining-btn table-btn" data-value="2">2</button>
+                <button class="dining-btn table-btn" data-value="3">3</button>
+                <button class="dining-btn table-btn" data-value="4">4</button>
+                <button class="dining-btn table-btn" data-value="5">5</button>
+                <button class="dining-btn table-btn" data-value="6">6</button>
+                <button class="dining-btn table-btn" data-value="7">7</button>
+                <button class="dining-btn table-btn" data-value="8">8</button>
+                <button class="dining-btn table-btn" data-value="9">9</button>
+                <button class="dining-btn table-btn" data-value="10">10</button>
+                <button class="dining-btn table-btn" data-value="11">11</button>
+                <button class="dining-btn table-btn" data-value="12">12</button>
+                <!-- 內用 / 外帶 -->
+                <button class="dining-btn dine-in" data-value="內用">🏠 內用</button>
+                <button class="dining-btn takeout" data-value="外帶">🛍️ 外帶</button>
+            </div>
+        </div>
+
         <div class="remark-area">
             <label for="orderRemark">📝 備註（辣度、口味調整等）</label>
             <textarea id="orderRemark" placeholder="例如：不要辣、少油、飯多一點..."></textarea>
         </div>
+
         <div class="cart-page-footer">
             <span class="total" id="cartPageTotal">$0</span>
             <button class="btn-submit-order" id="submitOrderBtn" disabled>✅ 確認點餐</button>
         </div>
     </div>
 
+    <!-- ===== 訂單確認頁 ===== -->
     <div id="orderConfirmPage">
         <div class="confirm-header">
             <div class="logo-small">
@@ -925,6 +1046,9 @@
         </div>
         <div class="confirm-order-id" id="confirmOrderId">訂單編號：#123456</div>
         <div class="confirm-items" id="confirmItemsList"></div>
+        <div class="confirm-dining-info" id="confirmDiningInfo">
+            <strong>📍 用餐方式：</strong> <span id="confirmDiningText">未選擇</span>
+        </div>
         <div class="confirm-remark" id="confirmRemark">
             <strong>📝 備註：</strong> <span id="confirmRemarkText">無</span>
         </div>
@@ -935,7 +1059,7 @@
 
     <script>
         // ============================================================
-        // ✅ fetch polyfill for iOS 9 (iPad 2)
+        // ✅ fetch polyfill for iOS 9
         // ============================================================
         if (typeof window.fetch === 'undefined') {
             window.fetch = function(url, options) {
@@ -1041,6 +1165,10 @@
         var lastOrderItems = [];
         var lastOrderTotal = 0;
         var lastOrderRemark = '';
+        var lastDiningOption = '';
+
+        // ✅ 用餐選項
+        var selectedDining = '';
 
         var API_URL = 'https://exalted-fax-barrier.ngrok-free.dev/api';
 
@@ -1234,6 +1362,26 @@
         }
 
         // ============================================================
+        // ✅ 用餐選項處理
+        // ============================================================
+        function initDiningButtons() {
+            var buttons = document.querySelectorAll('#diningOptions .dining-btn');
+            for (var i = 0; i < buttons.length; i++) {
+                (function(btn) {
+                    btn.addEventListener('click', function() {
+                        // 清除所有 active
+                        var allBtns = document.querySelectorAll('#diningOptions .dining-btn');
+                        for (var j = 0; j < allBtns.length; j++) {
+                            allBtns[j].classList.remove('active');
+                        }
+                        this.classList.add('active');
+                        selectedDining = this.getAttribute('data-value');
+                    });
+                })(buttons[i]);
+            }
+        }
+
+        // ============================================================
         // 滾動事件
         // ============================================================
         var ticking = false;
@@ -1314,6 +1462,17 @@
             document.body.style.overflow = 'hidden';
             renderCartPage();
             document.getElementById('orderRemark').value = orderRemark;
+
+            // 恢復上次選擇的用餐選項
+            if (selectedDining) {
+                var btns = document.querySelectorAll('#diningOptions .dining-btn');
+                for (var i = 0; i < btns.length; i++) {
+                    btns[i].classList.remove('active');
+                    if (btns[i].getAttribute('data-value') === selectedDining) {
+                        btns[i].classList.add('active');
+                    }
+                }
+            }
         }
 
         function closeCartPage() {
@@ -1334,6 +1493,12 @@
         document.getElementById('submitOrderBtn').addEventListener('click', function() {
             if (Object.keys(cart).length === 0) return;
 
+            // ✅ 檢查是否已選擇用餐方式
+            if (!selectedDining) {
+                alert('⚠️ 請先選擇用餐方式（桌號 / 內用 / 外帶）');
+                return;
+            }
+
             orderRemark = document.getElementById('orderRemark').value;
 
             var items = {};
@@ -1353,10 +1518,11 @@
             }
 
             var orderData = {
-                table: 1,
+                table: selectedDining,  // ✅ 傳送桌號或內用/外帶
                 items: items,
                 total: totalPrice,
-                remark: orderRemark
+                remark: orderRemark,
+                diningType: selectedDining  // ✅ 額外標記
             };
 
             fetch(API_URL + '/order', {
@@ -1389,10 +1555,17 @@
                     }
                     lastOrderTotal = totalPrice;
                     lastOrderRemark = orderRemark;
+                    lastDiningOption = selectedDining;
 
                     cart = {};
                     orderRemark = '';
+                    selectedDining = '';
                     document.getElementById('orderRemark').value = '';
+                    // 清除用餐選項的高亮
+                    var allBtns = document.querySelectorAll('#diningOptions .dining-btn');
+                    for (var p = 0; p < allBtns.length; p++) {
+                        allBtns[p].classList.remove('active');
+                    }
                     updateAllUI();
                     renderMenu();
                     closeCartPage();
@@ -1428,6 +1601,13 @@
             html += '<div class="confirm-total">總計：$' + lastOrderTotal + '</div>';
             document.getElementById('confirmItemsList').innerHTML = html;
 
+            // ✅ 顯示用餐方式
+            var diningDisplay = lastDiningOption;
+            if (!isNaN(lastDiningOption) && lastDiningOption >= 1 && lastDiningOption <= 12) {
+                diningDisplay = '桌號 ' + lastDiningOption;
+            }
+            document.getElementById('confirmDiningText').textContent = diningDisplay;
+
             document.getElementById('confirmRemarkText').textContent = lastOrderRemark || '無';
         }
 
@@ -1442,21 +1622,9 @@
         }
 
         // ============================================================
-        // 初始化
+        // ✅ 修正：目錄點擊滾動
         // ============================================================
-        function init() {
-            fetchSoldOutStatus();
-            syncSoldOutFromServer();
-            renderMenu();
-            updateAllUI();
-
-            var header = document.getElementById('mainHeader');
-            var headerHeight = header.getBoundingClientRect().height;
-            document.querySelector('.category-wrapper').style.top = headerHeight + 'px';
-
-            window.addEventListener('scroll', handleScroll);
-            window.addEventListener('touchmove', handleScroll);
-
+        function initCategoryTabs() {
             var tabs = document.querySelectorAll('.category-tab');
             for (var i = 0; i < tabs.length; i++) {
                 (function(tab) {
@@ -1481,6 +1649,25 @@
                     });
                 })(tabs[i]);
             }
+        }
+
+        // ============================================================
+        // 初始化
+        // ============================================================
+        function init() {
+            fetchSoldOutStatus();
+            syncSoldOutFromServer();
+            renderMenu();
+            updateAllUI();
+            initDiningButtons();
+            initCategoryTabs();
+
+            var header = document.getElementById('mainHeader');
+            var headerHeight = header.getBoundingClientRect().height;
+            document.querySelector('.category-wrapper').style.top = headerHeight + 'px';
+
+            window.addEventListener('scroll', handleScroll);
+            window.addEventListener('touchmove', handleScroll);
 
             setInterval(syncSoldOutFromServer, 10000);
             setTimeout(updateActiveCategory, 200);
