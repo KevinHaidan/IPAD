@@ -68,7 +68,7 @@
             gap: 6px;
             padding: 0 16px;
             overflow-x: auto;
-            overflow-y: hidden;
+            overflow-y: visible;
             -webkit-overflow-scrolling: touch;
             scrollbar-width: none;
             -webkit-box-align: center;
@@ -119,12 +119,13 @@
             border-radius: 4px;
         }
 
-        /* ===== ✅ 目錄上的摺疊用餐選單 ===== */
+        /* ===== 目錄上的摺疊用餐選單 ===== */
         .dining-dropdown-wrapper {
             -webkit-flex: 0 0 auto;
             flex: 0 0 auto;
             position: relative;
             margin-left: 4px;
+            overflow: visible;
         }
 
         .dining-dropdown-toggle {
@@ -169,56 +170,63 @@
             font-weight: 600;
         }
 
-.dining-dropdown-menu {
-    display: none;
-    position: absolute;
-    bottom: 32px;
-    right: 0;
-    background: white;
-    border-radius: 12px;
-    border: 2px solid #b8860b;
-    box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    padding: 10px 12px;
-    z-index: 9999;
-    min-width: 120px;
-    max-height: 320px;
-    overflow-y: auto;
-}
+        /* ✅ 下拉選單 - 往下展開，不會被裁切 */
+        .dining-dropdown-menu {
+            display: none;
+            position: fixed;
+            top: 105px;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #b8860b;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+            padding: 14px 16px;
+            z-index: 99999;
+            min-width: 200px;
+            max-height: 380px;
+            overflow-y: auto;
+        }
 
         .dining-dropdown-menu.open {
             display: block;
         }
 
         .dining-dropdown-menu .label {
-            font-size: 12px;
+            font-size: 13px;
             color: #999;
             font-weight: 600;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             letter-spacing: 0.5px;
+            text-align: center;
         }
 
-.dining-dropdown-menu .options-grid {
-    display: -webkit-box;
-    display: -webkit-flex;
-    display: flex;
-    -webkit-box-orient: vertical;
-    -webkit-flex-direction: column;
-    flex-direction: column;
-    gap: 4px;
-}
+        /* ✅ 直式排列 */
+        .dining-dropdown-menu .options-grid {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+            gap: 4px;
+        }
 
         .dining-dropdown-menu .dining-btn {
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 14px;
             border: 2px solid #ddd;
             background: white;
-            font-size: 13px;
+            font-size: 14px;
             font-weight: 500;
             cursor: pointer;
             color: #666;
             -webkit-transition: all 0.15s;
             transition: all 0.15s;
             -webkit-tap-highlight-color: transparent;
+            text-align: center;
+            width: 100%;
         }
 
         .dining-dropdown-menu .dining-btn:active {
@@ -233,7 +241,6 @@
         }
 
         .dining-dropdown-menu .dining-btn.table-btn {
-            min-width: 34px;
             text-align: center;
         }
 
@@ -1014,10 +1021,19 @@
             }
             .dining-dropdown-menu .dining-btn {
                 font-size: 12px;
-                padding: 3px 8px;
+                padding: 4px 10px;
             }
-            .dining-dropdown-menu .dining-btn.table-btn {
-                min-width: 30px;
+            .dining-dropdown-menu {
+                min-width: 160px;
+                top: 100px;
+            }
+        }
+
+        /* ✅ iPad 專用調整 */
+        @media (min-width: 768px) and (max-width: 1024px) {
+            .dining-dropdown-menu {
+                top: 110px;
+                min-width: 220px;
             }
         }
     </style>
@@ -1284,10 +1300,10 @@
             var html = '';
 
             for (var i = 1; i <= 12; i++) {
-                html += '<button class="dining-btn table-btn" data-value="' + i + '">' + i + '</button>';
+                html += '<button class="dining-btn table-btn" data-value="' + i + '">桌 ' + i + '</button>';
             }
-            html += '<button class="dining-btn dine-in" data-value="內用">🏠內用</button>';
-            html += '<button class="dining-btn takeout" data-value="外帶">🛍️外帶</button>';
+            html += '<button class="dining-btn dine-in" data-value="內用">🏠 內用</button>';
+            html += '<button class="dining-btn takeout" data-value="外帶">🛍️ 外帶</button>';
 
             grid.innerHTML = html;
 
@@ -1742,7 +1758,7 @@
         }
 
         // ============================================================
-        // 目錄點擊
+        // ✅ 目錄點擊 - 修正版
         // ============================================================
         function initCategoryTabs() {
             var tabs = document.querySelectorAll('.category-tab');
@@ -1750,22 +1766,39 @@
                 (function(tab) {
                     tab.addEventListener('click', function(e) {
                         e.preventDefault();
+
+                        // 取得目標分類名稱
                         var targetId = this.getAttribute('href').substring(1);
                         var targetEl = document.getElementById(targetId);
+
                         if (targetEl) {
+                            // 計算正確的偏移量
+                            var header = document.getElementById('mainHeader');
                             var catWrapper = document.querySelector('.category-wrapper');
+                            var headerHeight = header.getBoundingClientRect().height;
                             var catHeight = catWrapper.getBoundingClientRect().height;
-                            var headerRect = document.getElementById('mainHeader').getBoundingClientRect();
-                            var offset = headerRect.height + catHeight + 10;
-                            var targetPos = targetEl.getBoundingClientRect().top + window.pageYOffset - offset;
-                            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                            var offset = headerHeight + catHeight + 10;
+
+                            // 計算目標位置
+                            var targetRect = targetEl.getBoundingClientRect();
+                            var targetPos = targetRect.top + window.pageYOffset - offset;
+
+                            // 平滑滾動到目標
+                            window.scrollTo({
+                                top: targetPos,
+                                behavior: 'smooth'
+                            });
+
+                            // 更新 active 狀態
+                            var allTabs = document.querySelectorAll('.category-tab');
+                            for (var j = 0; j < allTabs.length; j++) {
+                                allTabs[j].classList.remove('active');
+                            }
+                            this.classList.add('active');
+
+                            // 延遲更新 active（等滾動完成）
+                            setTimeout(updateActiveCategory, 500);
                         }
-                        var allTabs = document.querySelectorAll('.category-tab');
-                        for (var j = 0; j < allTabs.length; j++) {
-                            allTabs[j].classList.remove('active');
-                        }
-                        this.classList.add('active');
-                        setTimeout(updateActiveCategory, 300);
                     });
                 })(tabs[i]);
             }
