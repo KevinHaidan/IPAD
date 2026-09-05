@@ -119,13 +119,14 @@
             border-radius: 4px;
         }
 
-        /* ===== 目錄上的摺疊用餐選單 ===== */
+        /* ===== 目錄上的用餐按鈕 ===== */
         .dining-dropdown-wrapper {
             -webkit-flex: 0 0 auto;
             flex: 0 0 auto;
             position: relative;
             margin-left: 4px;
             overflow: visible;
+            z-index: 999;
         }
 
         .dining-dropdown-toggle {
@@ -146,6 +147,8 @@
             color: #b8860b;
             -webkit-tap-highlight-color: transparent;
             white-space: nowrap;
+            position: relative;
+            z-index: 999;
         }
 
         .dining-dropdown-toggle:active {
@@ -170,55 +173,69 @@
             font-weight: 600;
         }
 
-        /* ✅ 下拉選單 - 往下展開，不會被裁切 */
-        .dining-dropdown-menu {
+        /* ✅ 下拉選單 - 掛在 body 底下，完全不受限制 */
+        #diningOverlay {
             display: none;
             position: fixed;
-            top: 105px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 99999;
+            background: rgba(0,0,0,0.3);
+        }
+
+        #diningOverlay.show {
+            display: block;
+        }
+
+        #diningMenuPanel {
+            display: none;
+            position: fixed;
+            top: 120px;
             left: 50%;
             -webkit-transform: translateX(-50%);
             transform: translateX(-50%);
             background: white;
-            border-radius: 12px;
+            border-radius: 16px;
             border: 2px solid #b8860b;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-            padding: 14px 16px;
-            z-index: 99999;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+            padding: 16px 20px 20px 20px;
+            z-index: 100000;
             min-width: 200px;
-            max-height: 380px;
+            max-height: 400px;
             overflow-y: auto;
         }
 
-        .dining-dropdown-menu.open {
+        #diningMenuPanel.show {
             display: block;
         }
 
-        .dining-dropdown-menu .label {
-            font-size: 13px;
+        #diningMenuPanel .label {
+            font-size: 14px;
             color: #999;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 10px;
             letter-spacing: 0.5px;
             text-align: center;
         }
 
-        /* ✅ 直式排列 */
-        .dining-dropdown-menu .options-grid {
+        #diningMenuPanel .options-grid {
             display: -webkit-box;
             display: -webkit-flex;
             display: flex;
             -webkit-box-orient: vertical;
             -webkit-flex-direction: column;
             flex-direction: column;
-            gap: 4px;
+            gap: 5px;
         }
 
-        .dining-dropdown-menu .dining-btn {
-            padding: 6px 12px;
-            border-radius: 14px;
+        #diningMenuPanel .dining-btn {
+            padding: 8px 14px;
+            border-radius: 12px;
             border: 2px solid #ddd;
             background: white;
-            font-size: 14px;
+            font-size: 15px;
             font-weight: 500;
             cursor: pointer;
             color: #666;
@@ -229,41 +246,55 @@
             width: 100%;
         }
 
-        .dining-dropdown-menu .dining-btn:active {
+        #diningMenuPanel .dining-btn:active {
             -webkit-transform: scale(0.95);
             transform: scale(0.95);
         }
 
-        .dining-dropdown-menu .dining-btn.active {
+        #diningMenuPanel .dining-btn.active {
             border-color: #b8860b;
             background: #b8860b;
             color: white;
         }
 
-        .dining-dropdown-menu .dining-btn.table-btn {
-            text-align: center;
-        }
-
-        .dining-dropdown-menu .dining-btn.dine-in {
+        #diningMenuPanel .dining-btn.dine-in {
             border-color: #2e7d32;
             color: #2e7d32;
         }
 
-        .dining-dropdown-menu .dining-btn.dine-in.active {
+        #diningMenuPanel .dining-btn.dine-in.active {
             background: #2e7d32;
             color: white;
             border-color: #2e7d32;
         }
 
-        .dining-dropdown-menu .dining-btn.takeout {
+        #diningMenuPanel .dining-btn.takeout {
             border-color: #e67e22;
             color: #e67e22;
         }
 
-        .dining-dropdown-menu .dining-btn.takeout.active {
+        #diningMenuPanel .dining-btn.takeout.active {
             background: #e67e22;
             color: white;
             border-color: #e67e22;
+        }
+
+        /* 關閉按鈕 */
+        #diningMenuPanel .close-menu-btn {
+            display: block;
+            margin: 10px auto 0 auto;
+            padding: 6px 20px;
+            border: none;
+            background: #f0ebe4;
+            border-radius: 20px;
+            font-size: 14px;
+            color: #888;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        #diningMenuPanel .close-menu-btn:active {
+            background: #e0d8cc;
         }
 
         .category-scroll-hint {
@@ -1019,21 +1050,20 @@
             .dining-dropdown-toggle .selected-label {
                 max-width: 35px;
             }
-            .dining-dropdown-menu .dining-btn {
-                font-size: 12px;
-                padding: 4px 10px;
+            #diningMenuPanel .dining-btn {
+                font-size: 13px;
+                padding: 6px 12px;
             }
-            .dining-dropdown-menu {
-                min-width: 160px;
+            #diningMenuPanel {
+                min-width: 170px;
                 top: 100px;
             }
         }
 
-        /* ✅ iPad 專用調整 */
         @media (min-width: 768px) and (max-width: 1024px) {
-            .dining-dropdown-menu {
-                top: 110px;
-                min-width: 220px;
+            #diningMenuPanel {
+                top: 130px;
+                min-width: 240px;
             }
         }
     </style>
@@ -1057,23 +1087,27 @@
             <a href="#cat-主食" class="category-tab" data-category="主食">主食</a>
             <a href="#cat-飲品" class="category-tab" data-category="飲品">飲品</a>
 
-            <!-- ✅ 摺疊用餐選單（放在飲品右邊） -->
-            <div class="dining-dropdown-wrapper" id="diningDropdownWrapper">
+            <!-- 用餐按鈕 -->
+            <div class="dining-dropdown-wrapper">
                 <div class="dining-dropdown-toggle" id="diningToggle">
                     <span>📍</span>
                     <span class="selected-label" id="selectedDiningLabel">桌號</span>
                     <span class="arrow" id="diningArrow">▼</span>
                 </div>
-                <div class="dining-dropdown-menu" id="diningMenu">
-                    <div class="label">選擇桌號或用餐方式</div>
-                    <div class="options-grid" id="diningOptionsGrid">
-                        <!-- 桌號 1~12 用 JS 產生 -->
-                    </div>
-                </div>
             </div>
 
             <span class="category-scroll-hint">›››</span>
         </div>
+    </div>
+
+    <!-- ===== 下拉選單（掛在 body 下，完全不受限制） ===== -->
+    <div id="diningOverlay"></div>
+    <div id="diningMenuPanel">
+        <div class="label">📍 選擇桌號或用餐方式</div>
+        <div class="options-grid" id="diningOptionsGrid">
+            <!-- JS 產生 -->
+        </div>
+        <button class="close-menu-btn" id="closeDiningMenu">✕ 關閉</button>
     </div>
 
     <div class="menu-section" id="menuSection"></div>
@@ -1293,7 +1327,7 @@
         }
 
         // ============================================================
-        // ✅ 產生目錄摺疊選單的按鈕
+        // ✅ 用餐選單（掛在 body 下，完全突破限制）
         // ============================================================
         function initDiningDropdown() {
             var grid = document.getElementById('diningOptionsGrid');
@@ -1307,33 +1341,44 @@
 
             grid.innerHTML = html;
 
-            // 摺疊開關
             var toggle = document.getElementById('diningToggle');
-            var menu = document.getElementById('diningMenu');
+            var overlay = document.getElementById('diningOverlay');
+            var panel = document.getElementById('diningMenuPanel');
             var arrow = document.getElementById('diningArrow');
+            var closeBtn = document.getElementById('closeDiningMenu');
+            var label = document.getElementById('selectedDiningLabel');
+
+            function openMenu() {
+                panel.classList.add('show');
+                overlay.classList.add('show');
+                arrow.classList.add('open');
+            }
+
+            function closeMenu() {
+                panel.classList.remove('show');
+                overlay.classList.remove('show');
+                arrow.classList.remove('open');
+            }
 
             toggle.addEventListener('click', function(e) {
                 e.stopPropagation();
-                menu.classList.toggle('open');
-                arrow.classList.toggle('open');
+                if (panel.classList.contains('show')) {
+                    closeMenu();
+                } else {
+                    openMenu();
+                }
             });
 
-            // 點擊外面關閉
-            document.addEventListener('click', function() {
-                menu.classList.remove('open');
-                arrow.classList.remove('open');
-            });
+            overlay.addEventListener('click', closeMenu);
+            closeBtn.addEventListener('click', closeMenu);
 
             // 按鈕事件
             var buttons = grid.querySelectorAll('.dining-btn');
-            var label = document.getElementById('selectedDiningLabel');
-
             for (var j = 0; j < buttons.length; j++) {
                 (function(btn) {
                     btn.addEventListener('click', function(e) {
                         e.stopPropagation();
 
-                        // 清除所有 active
                         var allBtns = grid.querySelectorAll('.dining-btn');
                         for (var k = 0; k < allBtns.length; k++) {
                             allBtns[k].classList.remove('active');
@@ -1341,21 +1386,18 @@
                         this.classList.add('active');
                         selectedDining = this.getAttribute('data-value');
 
-                        // 更新標籤
                         var displayText = selectedDining;
                         if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
                             displayText = '桌' + selectedDining;
                         }
                         label.textContent = displayText;
 
-                        // 自動關閉下拉
-                        menu.classList.remove('open');
-                        arrow.classList.remove('open');
+                        closeMenu();
                     });
                 })(buttons[j]);
             }
 
-            // 如果已經有選擇，恢復顯示
+            // 恢復選擇
             if (selectedDining) {
                 var displayText = selectedDining;
                 if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
@@ -1696,7 +1738,6 @@
                     selectedDining = '';
                     document.getElementById('orderRemark').value = '';
 
-                    // 清除選項
                     var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
                     for (var p = 0; p < allBtns.length; p++) {
                         allBtns[p].classList.remove('active');
@@ -1758,7 +1799,7 @@
         }
 
         // ============================================================
-        // ✅ 目錄點擊 - 修正版
+        // ✅ 目錄點擊 - 精確傳送
         // ============================================================
         function initCategoryTabs() {
             var tabs = document.querySelectorAll('.category-tab');
@@ -1767,36 +1808,31 @@
                     tab.addEventListener('click', function(e) {
                         e.preventDefault();
 
-                        // 取得目標分類名稱
                         var targetId = this.getAttribute('href').substring(1);
                         var targetEl = document.getElementById(targetId);
 
                         if (targetEl) {
-                            // 計算正確的偏移量
+                            // 計算偏移
                             var header = document.getElementById('mainHeader');
                             var catWrapper = document.querySelector('.category-wrapper');
                             var headerHeight = header.getBoundingClientRect().height;
                             var catHeight = catWrapper.getBoundingClientRect().height;
                             var offset = headerHeight + catHeight + 10;
 
-                            // 計算目標位置
                             var targetRect = targetEl.getBoundingClientRect();
                             var targetPos = targetRect.top + window.pageYOffset - offset;
 
-                            // 平滑滾動到目標
                             window.scrollTo({
                                 top: targetPos,
                                 behavior: 'smooth'
                             });
 
-                            // 更新 active 狀態
                             var allTabs = document.querySelectorAll('.category-tab');
                             for (var j = 0; j < allTabs.length; j++) {
                                 allTabs[j].classList.remove('active');
                             }
                             this.classList.add('active');
 
-                            // 延遲更新 active（等滾動完成）
                             setTimeout(updateActiveCategory, 500);
                         }
                     });
