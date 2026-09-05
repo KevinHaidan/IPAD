@@ -1,0 +1,1493 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>手機點餐</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'PingFang TC', 'Helvetica Neue', Arial, sans-serif;
+        }
+
+        body {
+            background: #f7f5f0;
+            padding-bottom: 80px;
+        }
+
+        .header {
+            background: white;
+            padding: 16px 20px 12px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 10;
+            transition: padding 0.03s linear;
+        }
+
+        .logo-wrapper {
+            transition: max-width 0.03s linear;
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .logo-placeholder {
+            width: 100%;
+            height: 0;
+            padding-bottom: 31.25%;
+            background: url('招牌.png') center/contain no-repeat;
+            border-radius: 12px;
+            transition: border-radius 0.03s linear;
+            border: none;
+            background-color: #f0ebe4;
+        }
+
+        .category-wrapper {
+            background: white;
+            padding: 10px 0 12px 0;
+            border-bottom: 2px solid #f0ebe4;
+            position: fixed;
+            left: 0;
+            right: 0;
+            z-index: 9;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: top 0.03s linear;
+            top: 0;
+        }
+
+        .category-scroll {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            gap: 6px;
+            padding: 0 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .category-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .category-tab {
+            -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+            padding: 4px 8px;
+            font-size: 15px;
+            font-weight: 500;
+            color: #999;
+            cursor: pointer;
+            text-decoration: none;
+            position: relative;
+            letter-spacing: 1px;
+            white-space: nowrap;
+        }
+
+        .category-tab:not(:last-child)::after {
+            content: '｜';
+            color: #d4c9b8;
+            font-weight: 300;
+            margin-left: 8px;
+        }
+
+        .category-tab.active {
+            color: #b8860b;
+            font-weight: 700;
+        }
+
+        .category-tab.active::before {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 50%;
+            -webkit-transform: translateX(-50%);
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: #b8860b;
+            border-radius: 4px;
+        }
+
+        .category-scroll-hint {
+            -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+            padding: 4px 4px 4px 0;
+            font-size: 14px;
+            color: #ccc;
+            -webkit-animation: hintPulse 1.5s ease-in-out infinite;
+            animation: hintPulse 1.5s ease-in-out infinite;
+        }
+
+        @-webkit-keyframes hintPulse {
+            0%, 100% { opacity: 0.3; -webkit-transform: translateX(0); transform: translateX(0); }
+            50% { opacity: 1; -webkit-transform: translateX(4px); transform: translateX(4px); }
+        }
+        @keyframes hintPulse {
+            0%, 100% { opacity: 0.3; -webkit-transform: translateX(0); transform: translateX(0); }
+            50% { opacity: 1; -webkit-transform: translateX(4px); transform: translateX(4px); }
+        }
+
+        .menu-section {
+            padding: 200px 16px 20px 16px;
+        }
+
+        .menu-section-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #3d2c1e;
+            margin: 20px 0 12px 0;
+            padding-left: 10px;
+            border-left: 4px solid #b8860b;
+        }
+
+        .menu-item {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+            border: 1px solid #f0ebe4;
+        }
+
+        .menu-item.sold-out {
+            opacity: 0.5;
+            background: #f5f2ed;
+        }
+
+        .menu-item.sold-out .qty-btn.add {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .menu-item.sold-out .sold-out-badge {
+            display: inline-block;
+            background: #e74c3c;
+            color: white;
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+
+        .menu-item-image {
+            -webkit-flex: 0 0 72px;
+            flex: 0 0 72px;
+            width: 72px;
+            height: 72px;
+            border-radius: 10px;
+            background: #e8e4de;
+            border: 1px solid #ddd;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #aaa;
+            overflow: hidden;
+        }
+
+        .menu-item-image span {
+            background: rgba(255,255,255,0.7);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+        }
+
+        .menu-item-info {
+            -webkit-flex: 1;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .menu-item-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #2d241a;
+        }
+
+        .menu-item-desc {
+            font-size: 13px;
+            color: #999;
+            margin-top: 2px;
+        }
+
+        .menu-item-price {
+            font-size: 17px;
+            font-weight: 700;
+            color: #b8860b;
+            margin-top: 4px;
+        }
+
+        .menu-item-right {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 6px;
+            -webkit-flex: 0 0 auto;
+            flex: 0 0 auto;
+        }
+
+        .qty-control {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .qty-btn {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            border: none;
+            font-size: 18px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #f0ebe4;
+            color: #3d2c1e;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+        }
+
+        .qty-btn:active {
+            -webkit-transform: scale(0.9);
+            transform: scale(0.9);
+        }
+
+        .qty-btn.add {
+            background: #b8860b;
+            color: white;
+        }
+
+        .qty-btn.add:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .qty-number {
+            font-size: 17px;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+            color: #3d2c1e;
+        }
+
+        .qty-number.hidden {
+            display: none;
+        }
+
+        .sold-out-badge {
+            display: none;
+        }
+
+        .cart-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.10);
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            z-index: 100;
+            border-top: 2px solid #b8860b;
+            min-height: 68px;
+        }
+
+        .cart-left {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .cart-icon {
+            font-size: 28px;
+            position: relative;
+        }
+
+        .cart-badge {
+            position: absolute;
+            top: -6px;
+            right: -10px;
+            background: #b8860b;
+            color: white;
+            font-size: 12px;
+            font-weight: 700;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+        }
+
+        .cart-info {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-orient: vertical;
+            -webkit-box-direction: normal;
+            -webkit-flex-direction: column;
+            flex-direction: column;
+        }
+
+        .cart-total-items {
+            font-size: 14px;
+            color: #888;
+        }
+
+        .cart-total-price {
+            font-size: 20px;
+            font-weight: 700;
+            color: #b8860b;
+        }
+
+        .cart-checkout-btn {
+            background: #b8860b;
+            color: white;
+            border: none;
+            padding: 10px 28px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cart-checkout-btn:active {
+            -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        .cart-checkout-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        #cartPage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f7f5f0;
+            z-index: 200;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 100px 16px 120px 16px;
+        }
+
+        #cartPage.show {
+            display: block;
+        }
+
+        .cart-header {
+            background: white;
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 15;
+        }
+
+        .cart-header .logo-small {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .cart-header .logo-small .logo-placeholder-sm {
+            width: 100%;
+            height: 0;
+            padding-bottom: 31.25%;
+            background: url('招牌.png') center/contain no-repeat;
+            border-radius: 8px;
+            background-color: #f0ebe4;
+        }
+
+        .cart-page-header {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            background: white;
+            padding: 16px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-top: 10px;
+        }
+
+        .cart-page-header h2 {
+            font-size: 20px;
+            color: #3d2c1e;
+        }
+
+        .btn-back {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 4px 12px;
+        }
+
+        .cart-item {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 14px;
+            background: white;
+            border-radius: 12px;
+            padding: 12px 14px;
+            margin-bottom: 10px;
+            border: 1px solid #f0ebe4;
+        }
+
+        .cart-item-info {
+            -webkit-flex: 1;
+            flex: 1;
+        }
+
+        .cart-item-name {
+            font-size: 17px;
+            font-weight: 600;
+            color: #2d241a;
+        }
+
+        .cart-item-price {
+            font-size: 15px;
+            font-weight: 700;
+            color: #b8860b;
+            margin-top: 2px;
+        }
+
+        .cart-item-right {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .cart-item-qty {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .cart-item-qty button {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            background: #f0ebe4;
+            color: #3d2c1e;
+        }
+
+        .cart-item-qty button.add {
+            background: #b8860b;
+            color: white;
+        }
+
+        .cart-item-qty span {
+            font-size: 17px;
+            font-weight: 600;
+            min-width: 24px;
+            text-align: center;
+        }
+
+        .cart-item-remove {
+            color: #e74c3c;
+            font-size: 20px;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .remark-area {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+            border: 1px solid #f0ebe4;
+        }
+
+        .remark-area label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #3d2c1e;
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .remark-area textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+            font-size: 15px;
+            resize: vertical;
+            min-height: 70px;
+            font-family: inherit;
+        }
+
+        .remark-area textarea:focus {
+            outline: none;
+            border-color: #b8860b;
+        }
+
+        .cart-page-footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 12px 20px;
+            box-shadow: 0 -4px 16px rgba(0,0,0,0.10);
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            z-index: 100;
+            border-top: 2px solid #b8860b;
+        }
+
+        .cart-page-footer .total {
+            font-size: 20px;
+            font-weight: 700;
+            color: #b8860b;
+        }
+
+        .btn-submit-order {
+            background: #b8860b;
+            color: white;
+            border: none;
+            padding: 12px 32px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-submit-order:active {
+            -webkit-transform: scale(0.95);
+            transform: scale(0.95);
+        }
+
+        .btn-submit-order:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .empty-cart-msg {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+            font-size: 18px;
+        }
+
+        #orderConfirmPage {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #f7f5f0;
+            z-index: 300;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            padding: 100px 16px 80px 16px;
+        }
+
+        #orderConfirmPage.show {
+            display: block;
+        }
+
+        .confirm-footer-hint {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #f7f5f0;
+            padding: 14px 20px;
+            text-align: center;
+            color: #999;
+            font-size: 14px;
+            border-top: 1px solid #e8e4de;
+            z-index: 15;
+            letter-spacing: 0.5px;
+        }
+
+        .confirm-footer-hint span {
+            display: inline-block;
+        }
+
+        .confirm-header {
+            background: white;
+            padding: 12px 20px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 15;
+        }
+
+        .confirm-header .logo-small {
+            max-width: 200px;
+            margin: 0 auto;
+        }
+
+        .confirm-header .logo-small .logo-placeholder-sm {
+            width: 100%;
+            height: 0;
+            padding-bottom: 31.25%;
+            background: url('招牌.png') center/contain no-repeat;
+            border-radius: 8px;
+            background-color: #f0ebe4;
+        }
+
+        .confirm-title-bar {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            justify-content: center;
+            background: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-top: 10px;
+            position: relative;
+        }
+
+        .confirm-title-bar .btn-back {
+            position: absolute;
+            left: 10px;
+            font-size: 22px;
+        }
+
+        .confirm-title-bar h2 {
+            font-size: 20px;
+            color: #3d2c1e;
+        }
+
+        .confirm-success {
+            text-align: center;
+            padding: 16px 0;
+            font-size: 18px;
+            color: #2e7d32;
+        }
+
+        .confirm-success .big-icon {
+            font-size: 56px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        .confirm-order-id {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 16px;
+        }
+
+        .confirm-items {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            border: 1px solid #f0ebe4;
+            margin-bottom: 16px;
+        }
+
+        .confirm-item {
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: flex;
+            -webkit-box-pack: justify;
+            -webkit-justify-content: space-between;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #f5f2ed;
+            font-size: 16px;
+        }
+
+        .confirm-item:last-child {
+            border-bottom: none;
+        }
+
+        .confirm-item .item-name {
+            color: #3d2c1e;
+        }
+
+        .confirm-item .item-qty {
+            color: #888;
+            margin: 0 12px;
+        }
+
+        .confirm-item .item-price {
+            font-weight: 600;
+            color: #b8860b;
+        }
+
+        .confirm-total {
+            font-size: 24px;
+            font-weight: 700;
+            color: #b8860b;
+            text-align: right;
+            padding: 12px 0;
+            border-top: 2px solid #f0ebe4;
+            margin-top: 8px;
+        }
+
+        .confirm-remark {
+            background: #f8f5f0;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin-top: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .confirm-remark strong {
+            color: #3d2c1e;
+        }
+
+        @media (max-width: 380px) {
+            .category-tab {
+                font-size: 13px;
+                padding: 2px 5px;
+            }
+            .menu-item-image {
+                -webkit-flex: 0 0 60px;
+                flex: 0 0 60px;
+                width: 60px;
+                height: 60px;
+            }
+            .menu-item-name {
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="header" id="mainHeader">
+        <div class="logo-wrapper">
+            <div class="logo-placeholder"></div>
+        </div>
+    </header>
+
+    <div class="category-wrapper" id="categoryWrapper">
+        <div class="category-scroll" id="categoryScroll">
+            <a href="#cat-招牌必點" class="category-tab" data-category="招牌必點">招牌必點</a>
+            <a href="#cat-經典料理" class="category-tab" data-category="經典料理">經典料理</a>
+            <a href="#cat-高山蔬菜" class="category-tab" data-category="高山蔬菜">高山蔬菜</a>
+            <a href="#cat-炸物小點" class="category-tab" data-category="炸物小點">炸物小點</a>
+            <a href="#cat-湯品" class="category-tab" data-category="湯品">湯品</a>
+            <a href="#cat-主食" class="category-tab" data-category="主食">主食</a>
+            <a href="#cat-飲品" class="category-tab" data-category="飲品">飲品</a>
+            <span class="category-scroll-hint">›››</span>
+        </div>
+    </div>
+
+    <div class="menu-section" id="menuSection"></div>
+
+    <div class="cart-bar" id="cartBar">
+        <div class="cart-left">
+            <div class="cart-icon">
+                🛒
+                <span class="cart-badge" id="cartBadge">0</span>
+            </div>
+            <div class="cart-info">
+                <span class="cart-total-items" id="cartTotalItems">目前沒有餐點</span>
+                <span class="cart-total-price" id="cartTotalPrice">$0</span>
+            </div>
+        </div>
+        <button class="cart-checkout-btn" id="viewCartBtn" disabled>查看購物車</button>
+    </div>
+
+    <div id="cartPage">
+        <div class="cart-header">
+            <div class="logo-small">
+                <div class="logo-placeholder-sm"></div>
+            </div>
+        </div>
+        <div class="cart-page-header">
+            <button class="btn-back" id="closeCartBtn">←</button>
+            <h2>🛒 購物車</h2>
+            <span style="width:40px;"></span>
+        </div>
+        <div id="cartItemsList"></div>
+        <div class="remark-area">
+            <label for="orderRemark">📝 備註（辣度、口味調整等）</label>
+            <textarea id="orderRemark" placeholder="例如：不要辣、少油、飯多一點..."></textarea>
+        </div>
+        <div class="cart-page-footer">
+            <span class="total" id="cartPageTotal">$0</span>
+            <button class="btn-submit-order" id="submitOrderBtn" disabled>✅ 確認點餐</button>
+        </div>
+    </div>
+
+    <div id="orderConfirmPage">
+        <div class="confirm-header">
+            <div class="logo-small">
+                <div class="logo-placeholder-sm"></div>
+            </div>
+        </div>
+        <div class="confirm-title-bar">
+            <h2>📋 訂單確認</h2>
+        </div>
+        <div class="confirm-success">
+            <span class="big-icon">✅</span>
+            訂單已送出！
+        </div>
+        <div class="confirm-order-id" id="confirmOrderId">訂單編號：#123456</div>
+        <div class="confirm-items" id="confirmItemsList"></div>
+        <div class="confirm-remark" id="confirmRemark">
+            <strong>📝 備註：</strong> <span id="confirmRemarkText">無</span>
+        </div>
+        <div class="confirm-footer-hint">
+            <span>💡 若想加點，請重新掃描桌面 QR Code</span>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        // ✅ fetch polyfill for iOS 9 (iPad 2)
+        // ============================================================
+        if (typeof window.fetch === 'undefined') {
+            window.fetch = function(url, options) {
+                return new Promise(function(resolve, reject) {
+                    var xhr = new XMLHttpRequest();
+                    options = options || {};
+                    var method = options.method || 'GET';
+                    xhr.open(method, url, true);
+
+                    var headers = options.headers || {};
+                    for (var key in headers) {
+                        if (headers.hasOwnProperty(key)) {
+                            xhr.setRequestHeader(key, headers[key]);
+                        }
+                    }
+
+                    xhr.onload = function() {
+                        var response = {
+                            ok: xhr.status >= 200 && xhr.status < 300,
+                            status: xhr.status,
+                            statusText: xhr.statusText,
+                            json: function() {
+                                return new Promise(function(resolveJson, rejectJson) {
+                                    try {
+                                        resolveJson(JSON.parse(xhr.responseText));
+                                    } catch (e) {
+                                        rejectJson(e);
+                                    }
+                                });
+                            },
+                            text: function() {
+                                return new Promise(function(resolveText) {
+                                    resolveText(xhr.responseText);
+                                });
+                            }
+                        };
+                        resolve(response);
+                    };
+
+                    xhr.onerror = function() {
+                        reject(new Error('Network request failed'));
+                    };
+
+                    xhr.send(options.body || null);
+                });
+            };
+        }
+
+        // ============================================================
+        // 菜單資料
+        // ============================================================
+        var menuData = [
+            { id: 1, name: '脆皮櫻桃鴨 (半隻)', desc: '外皮酥脆，肉質鮮嫩', price: 600, category: '招牌必點' },
+            { id: 2, name: '白斬文昌雞 (半隻)', desc: '皮脆肉Q，原汁原味', price: 600, category: '招牌必點' },
+            { id: 3, name: '德國豬腳', desc: '外酥內軟，經典德式風味', price: 600, category: '招牌必點' },
+            { id: 4, name: '清蒸現撈活鱸魚', desc: '現撈活魚，鮮甜滑嫩', price: 500, category: '招牌必點' },
+            { id: 5, name: '紅燒牛腩煲', desc: '慢火燉煮，入口即化', price: 480, category: '招牌必點' },
+            { id: 6, name: '楓味煎豬肝', desc: '楓味醬香，軟嫩甘甜', price: 280, category: '經典料理' },
+            { id: 7, name: '菜脯蛋', desc: '古早味經典', price: 150, category: '經典料理' },
+            { id: 8, name: '滑蛋蝦仁', desc: '鮮蝦滑蛋，軟嫩鮮甜', price: 280, category: '經典料理' },
+            { id: 9, name: '荔枝柴燒肉', desc: '荔枝木燻香，入口即化', price: 300, category: '經典料理' },
+            { id: 10, name: '麻油松阪豬', desc: '麻油香氣，松阪Q彈', price: 380, category: '經典料理' },
+            { id: 11, name: '韭黃牛肉', desc: '韭黃清脆，牛肉軟嫩', price: 320, category: '經典料理' },
+            { id: 12, name: '沙茶牛肉', desc: '沙茶醬香，經典熱炒', price: 280, category: '經典料理' },
+            { id: 13, name: '沙茶羊肉', desc: '沙茶入味，無羊羶味', price: 280, category: '經典料理' },
+            { id: 14, name: '紅燒老皮嫩豆腐', desc: '外酥內嫩，紅燒入味', price: 220, category: '經典料理' },
+            { id: 15, name: '川燙小卷', desc: '新鮮小卷，簡單川燙', price: 280, category: '經典料理' },
+            { id: 16, name: '川燙白蝦', desc: '鮮甜白蝦，原味呈現', price: 360, category: '經典料理' },
+            { id: 17, name: '鳳梨蝦球', desc: '酸甜鳳梨，酥脆蝦球', price: 360, category: '經典料理' },
+            { id: 18, name: '魚蛋沙拉', desc: '魚蛋Q彈，沙拉清爽', price: 280, category: '經典料理' },
+            { id: 19, name: '雙蛋地瓜葉', desc: '皮蛋+鹹蛋，獨特風味', price: 220, category: '高山蔬菜' },
+            { id: 20, name: '培根高麗菜', desc: '培根鹹香，高麗菜脆甜', price: 160, category: '高山蔬菜' },
+            { id: 21, name: '香滷桂竹筍', desc: '滷汁入味，清脆爽口', price: 220, category: '高山蔬菜' },
+            { id: 22, name: '鹹蛋苦瓜', desc: '鹹蛋金沙，苦瓜回甘', price: 220, category: '高山蔬菜' },
+            { id: 23, name: '季節時蔬', desc: '當季新鮮蔬菜', price: 150, category: '高山蔬菜' },
+            { id: 24, name: '炸物拼盤', desc: '綜合炸物，一次滿足', price: 280, category: '炸物小點' },
+            { id: 25, name: '炸小卷薯薯', desc: '小卷+薯條，雙重享受', price: 360, category: '炸物小點' },
+            { id: 26, name: '炸地瓜梅梅', desc: '地瓜+梅粉，酸甜酥脆', price: 150, category: '炸物小點' },
+            { id: 27, name: '炸冰淇淋 (5顆)', desc: '外熱內冰，驚喜口感', price: 150, category: '炸物小點' },
+            { id: 28, name: '手工小饅頭 (10顆)', desc: '手工製作，香Q可口', price: 120, category: '炸物小點' },
+            { id: 29, name: '現撈活鱸魚湯', desc: '現撈活魚，鮮甜湯頭', price: 550, category: '湯品' },
+            { id: 30, name: '鳳梨苦瓜雞', desc: '鳳梨甘甜，苦瓜回甘', price: 600, category: '湯品' },
+            { id: 31, name: '剝皮辣椒雞', desc: '微辣回甘，暖胃首選', price: 600, category: '湯品' },
+            { id: 32, name: '養生人蔘雞', desc: '人蔘滋補，溫潤養生', price: 600, category: '湯品' },
+            { id: 33, name: '白菜鮮果燜雞', desc: '鮮果清甜，雞肉軟嫩', price: 700, category: '湯品' },
+            { id: 34, name: '喵喵砂鍋魚頭', desc: '店貓慢燉，魚頭鮮美', price: 700, category: '湯品' },
+            { id: 35, name: '牛肉蛋炒飯', desc: '牛肉香氣，粒粒分明', price: 160, category: '主食' },
+            { id: 36, name: '蝦仁蛋炒飯', desc: '鮮甜蝦仁，鑊氣十足', price: 160, category: '主食' },
+            { id: 37, name: '白飯', desc: '台灣好米，香Q可口', price: 10, category: '主食' },
+            { id: 38, name: '紅茶', desc: '經典古早味紅茶', price: 80, category: '飲品' },
+            { id: 39, name: '奶茶', desc: '香濃滑順奶茶', price: 80, category: '飲品' },
+            { id: 40, name: '柳橙汁', desc: '新鮮現榨柳橙汁', price: 80, category: '飲品' },
+            { id: 41, name: '美式咖啡', desc: '香醇美式咖啡', price: 100, category: '飲品' },
+            { id: 42, name: '拿鐵咖啡', desc: '濃郁拿鐵，奶香十足', price: 120, category: '飲品' }
+        ];
+
+        var categories = ['招牌必點', '經典料理', '高山蔬菜', '炸物小點', '湯品', '主食', '飲品'];
+
+        var cart = {};
+        var orderRemark = '';
+        var soldOutItems = new Set();
+        var lastOrderId = null;
+        var lastOrderItems = [];
+        var lastOrderTotal = 0;
+        var lastOrderRemark = '';
+
+        var API_URL = 'https://exalted-fax-barrier.ngrok-free.dev/api';
+
+        // ============================================================
+        // 售完狀態
+        // ============================================================
+        function fetchSoldOutStatus() {
+            var saved = localStorage.getItem('soldOutItems');
+            if (saved) {
+                try {
+                    var arr = JSON.parse(saved);
+                    soldOutItems = new Set(arr);
+                } catch (e) {
+                    soldOutItems = new Set();
+                }
+            }
+        }
+
+        function saveSoldOutStatus() {
+            localStorage.setItem('soldOutItems', JSON.stringify(Array.from(soldOutItems)));
+        }
+
+        function syncSoldOutFromServer() {
+            fetch(API_URL + '/soldout', {
+                headers: { 'ngrok-skip-browser-warning': 'true' }
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data && Array.isArray(data)) {
+                    soldOutItems = new Set(data);
+                    saveSoldOutStatus();
+                    renderMenu();
+                }
+            })
+            .catch(function() {});
+        }
+
+        // ============================================================
+        // 渲染餐點
+        // ============================================================
+        function renderMenu() {
+            var section = document.getElementById('menuSection');
+            var grouped = {};
+            for (var i = 0; i < menuData.length; i++) {
+                var item = menuData[i];
+                if (!grouped[item.category]) grouped[item.category] = [];
+                grouped[item.category].push(item);
+            }
+
+            var html = '';
+            for (var ci = 0; ci < categories.length; ci++) {
+                var catName = categories[ci];
+                var items = grouped[catName] || [];
+                html += '<div class="menu-section-title" id="cat-' + catName + '">' + catName + '</div>';
+                for (var j = 0; j < items.length; j++) {
+                    var item = items[j];
+                    var qty = cart[item.id] || 0;
+                    var isSoldOut = soldOutItems.has(item.id);
+                    var soldOutClass = isSoldOut ? 'sold-out' : '';
+                    var addDisabled = isSoldOut ? 'disabled' : '';
+
+                    html += '<div class="menu-item ' + soldOutClass + '">';
+                    html += '<div class="menu-item-image"><span>📷</span></div>';
+                    html += '<div class="menu-item-info">';
+                    html += '<div class="menu-item-name">' + item.name;
+                    if (isSoldOut) html += '<span class="sold-out-badge">售完</span>';
+                    html += '</div>';
+                    html += '<div class="menu-item-desc">' + item.desc + '</div>';
+                    html += '<div class="menu-item-price">$' + item.price + '</div>';
+                    html += '</div>';
+                    html += '<div class="menu-item-right">';
+                    html += '<div class="qty-control">';
+                    html += '<button class="qty-btn" onclick="updateQty(' + item.id + ', -1)" ' + (qty === 0 ? 'disabled' : '') + '>−</button>';
+                    html += '<span class="qty-number ' + (qty === 0 ? 'hidden' : '') + '" id="qtyDisplay_' + item.id + '">' + qty + '</span>';
+                    html += '<button class="qty-btn add" onclick="updateQty(' + item.id + ', 1)" ' + addDisabled + '>+</button>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+            }
+            section.innerHTML = html;
+        }
+
+        // ============================================================
+        // 更新數量
+        // ============================================================
+        function updateQty(id, delta) {
+            var item = null;
+            for (var i = 0; i < menuData.length; i++) {
+                if (menuData[i].id === id) { item = menuData[i]; break; }
+            }
+            if (!item) return;
+            if (soldOutItems.has(id) && delta > 0) return;
+
+            var newQty = (cart[id] || 0) + delta;
+            if (newQty <= 0) {
+                delete cart[id];
+            } else {
+                cart[id] = newQty;
+            }
+            updateAllUI();
+            renderMenu();
+        }
+
+        function updateCartQty(id, delta) {
+            var item = null;
+            for (var i = 0; i < menuData.length; i++) {
+                if (menuData[i].id === id) { item = menuData[i]; break; }
+            }
+            if (!item) return;
+            if (soldOutItems.has(id) && delta > 0) return;
+
+            var newQty = (cart[id] || 0) + delta;
+            if (newQty <= 0) {
+                delete cart[id];
+            } else {
+                cart[id] = newQty;
+            }
+            updateAllUI();
+            renderMenu();
+            renderCartPage();
+        }
+
+        // ============================================================
+        // 更新 UI
+        // ============================================================
+        function updateAllUI() {
+            var keys = Object.keys(cart);
+            var totalQty = 0;
+            var totalPrice = 0;
+            for (var i = 0; i < keys.length; i++) {
+                var id = keys[i];
+                totalQty += cart[id];
+                var item = null;
+                for (var j = 0; j < menuData.length; j++) {
+                    if (menuData[j].id === parseInt(id, 10)) { item = menuData[j]; break; }
+                }
+                if (item) totalPrice += item.price * cart[id];
+            }
+
+            document.getElementById('cartBadge').textContent = totalQty;
+            document.getElementById('cartTotalItems').textContent = totalQty > 0 ? '共 ' + totalQty + ' 項餐點' : '目前沒有餐點';
+            document.getElementById('cartTotalPrice').textContent = totalQty > 0 ? '$' + totalPrice : '$0';
+
+            var viewBtn = document.getElementById('viewCartBtn');
+            viewBtn.disabled = totalQty === 0;
+            viewBtn.textContent = totalQty > 0 ? '查看購物車 (' + totalQty + ')' : '查看購物車';
+
+            document.getElementById('cartPageTotal').textContent = '$' + totalPrice;
+            document.getElementById('submitOrderBtn').disabled = totalQty === 0;
+        }
+
+        // ============================================================
+        // 購物車頁面
+        // ============================================================
+        function renderCartPage() {
+            var container = document.getElementById('cartItemsList');
+            var keys = Object.keys(cart);
+
+            if (keys.length === 0) {
+                container.innerHTML = '<div class="empty-cart-msg">🛒 購物車是空的<br>快去點餐吧！</div>';
+                return;
+            }
+
+            var html = '';
+            for (var i = 0; i < keys.length; i++) {
+                var id = keys[i];
+                var item = null;
+                for (var j = 0; j < menuData.length; j++) {
+                    if (menuData[j].id === parseInt(id, 10)) { item = menuData[j]; break; }
+                }
+                if (!item) continue;
+                var qty = cart[id];
+                var isSoldOut = soldOutItems.has(item.id);
+                html += '<div class="cart-item">';
+                html += '<div class="cart-item-info">';
+                html += '<div class="cart-item-name">' + item.name + (isSoldOut ? ' 🔴售完' : '') + '</div>';
+                html += '<div class="cart-item-price">$' + item.price + ' x ' + qty + ' = $' + (item.price * qty) + '</div>';
+                html += '</div>';
+                html += '<div class="cart-item-right">';
+                html += '<div class="cart-item-qty">';
+                html += '<button onclick="updateCartQty(' + item.id + ', -1)" ' + (qty <= 1 ? 'disabled' : '') + '>−</button>';
+                html += '<span>' + qty + '</span>';
+                html += '<button class="add" onclick="updateCartQty(' + item.id + ', 1)" ' + (isSoldOut ? 'disabled' : '') + '>+</button>';
+                html += '</div>';
+                html += '<button class="cart-item-remove" onclick="updateCartQty(' + item.id + ', -999)">✕</button>';
+                html += '</div>';
+                html += '</div>';
+            }
+            container.innerHTML = html;
+        }
+
+        // ============================================================
+        // 滾動事件
+        // ============================================================
+        var ticking = false;
+
+        function handleScroll() {
+            if (!ticking) {
+                window.requestAnimationFrame(function() {
+                    updateLayout();
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+
+        function updateLayout() {
+            var header = document.getElementById('mainHeader');
+            var categoryWrapper = document.querySelector('.category-wrapper');
+            var scrollY = window.scrollY || window.pageYOffset || 0;
+
+            var maxScroll = 50;
+            var progress = Math.min(scrollY / maxScroll, 1);
+
+            var padTop = 16 - (16 - 6) * progress;
+            var padBottom = 12 - (12 - 6) * progress;
+            header.style.paddingTop = padTop + 'px';
+            header.style.paddingBottom = padBottom + 'px';
+
+            var logoMaxWidth = 400 - (400 - 80) * progress;
+            var logoWrap = document.querySelector('.logo-wrapper');
+            logoWrap.style.maxWidth = logoMaxWidth + 'px';
+
+            var logoPlaceholder = document.querySelector('.logo-placeholder');
+            var radius = 12 - (12 - 8) * progress;
+            logoPlaceholder.style.borderRadius = radius + 'px';
+
+            var headerRect = header.getBoundingClientRect();
+            var headerHeight = headerRect.height;
+            categoryWrapper.style.top = headerHeight + 'px';
+
+            updateActiveCategory();
+        }
+
+        function updateActiveCategory() {
+            var tabs = document.querySelectorAll('.category-tab');
+            var titles = document.querySelectorAll('.menu-section-title');
+            var current = null;
+
+            var categoryWrapper = document.querySelector('.category-wrapper');
+            var catBottom = categoryWrapper.getBoundingClientRect().bottom;
+            var offset = 10;
+
+            for (var i = 0; i < titles.length; i++) {
+                var rect = titles[i].getBoundingClientRect();
+                if (rect.top <= catBottom + offset) {
+                    current = titles[i].id.replace('cat-', '');
+                }
+            }
+
+            if (!current && titles.length > 0) {
+                current = titles[titles.length - 1].id.replace('cat-', '');
+            }
+
+            for (var j = 0; j < tabs.length; j++) {
+                var tab = tabs[j];
+                if (tab.dataset.category === current) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            }
+        }
+
+        // ============================================================
+        // 購物車開關
+        // ============================================================
+        function openCartPage() {
+            document.getElementById('cartPage').classList.add('show');
+            document.body.style.overflow = 'hidden';
+            renderCartPage();
+            document.getElementById('orderRemark').value = orderRemark;
+        }
+
+        function closeCartPage() {
+            document.getElementById('cartPage').classList.remove('show');
+            document.body.style.overflow = '';
+            orderRemark = document.getElementById('orderRemark').value;
+        }
+
+        document.getElementById('viewCartBtn').addEventListener('click', openCartPage);
+        document.getElementById('closeCartBtn').addEventListener('click', closeCartPage);
+        document.getElementById('cartPage').addEventListener('click', function(e) {
+            if (e.target === this) closeCartPage();
+        });
+
+        // ============================================================
+        // 確認點餐
+        // ============================================================
+        document.getElementById('submitOrderBtn').addEventListener('click', function() {
+            if (Object.keys(cart).length === 0) return;
+
+            orderRemark = document.getElementById('orderRemark').value;
+
+            var items = {};
+            var keys = Object.keys(cart);
+            for (var i = 0; i < keys.length; i++) {
+                items[keys[i]] = cart[keys[i]];
+            }
+
+            var totalPrice = 0;
+            for (var j = 0; j < keys.length; j++) {
+                var id = keys[j];
+                var item = null;
+                for (var k = 0; k < menuData.length; k++) {
+                    if (menuData[k].id === parseInt(id, 10)) { item = menuData[k]; break; }
+                }
+                if (item) totalPrice += item.price * cart[id];
+            }
+
+            var orderData = {
+                table: 1,
+                items: items,
+                total: totalPrice,
+                remark: orderRemark
+            };
+
+            fetch(API_URL + '/order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'ngrok-skip-browser-warning': 'true'
+                },
+                body: JSON.stringify(orderData)
+            })
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
+                if (data.success) {
+                    lastOrderId = data.orderId;
+                    lastOrderItems = [];
+                    var cartKeys = Object.keys(cart);
+                    for (var m = 0; m < cartKeys.length; m++) {
+                        var id2 = cartKeys[m];
+                        var item2 = null;
+                        for (var n = 0; n < menuData.length; n++) {
+                            if (menuData[n].id === parseInt(id2, 10)) { item2 = menuData[n]; break; }
+                        }
+                        if (item2) {
+                            lastOrderItems.push({
+                                name: item2.name,
+                                qty: cart[id2],
+                                price: item2.price
+                            });
+                        }
+                    }
+                    lastOrderTotal = totalPrice;
+                    lastOrderRemark = orderRemark;
+
+                    cart = {};
+                    orderRemark = '';
+                    document.getElementById('orderRemark').value = '';
+                    updateAllUI();
+                    renderMenu();
+                    closeCartPage();
+
+                    showConfirmPage();
+                } else {
+                    alert('❌ 訂單送出失敗，請稍後再試');
+                }
+            })
+            .catch(function(error) {
+                alert('❌ 連線失敗，請確認網路連線');
+                console.log('錯誤:', error);
+            });
+        });
+
+        function showConfirmPage() {
+            var page = document.getElementById('orderConfirmPage');
+            page.classList.add('show');
+            document.body.style.overflow = 'hidden';
+
+            var shortId = String(lastOrderId).slice(-6);
+            document.getElementById('confirmOrderId').textContent = '訂單編號：#' + shortId;
+
+            var html = '';
+            for (var i = 0; i < lastOrderItems.length; i++) {
+                var item = lastOrderItems[i];
+                html += '<div class="confirm-item">';
+                html += '<span class="item-name">' + item.name + '</span>';
+                html += '<span class="item-qty">× ' + item.qty + '</span>';
+                html += '<span class="item-price">$' + (item.price * item.qty) + '</span>';
+                html += '</div>';
+            }
+            html += '<div class="confirm-total">總計：$' + lastOrderTotal + '</div>';
+            document.getElementById('confirmItemsList').innerHTML = html;
+
+            document.getElementById('confirmRemarkText').textContent = lastOrderRemark || '無';
+        }
+
+        function closeConfirmPage() {
+            document.getElementById('orderConfirmPage').classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function goBackToMenu() {
+            closeConfirmPage();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // ============================================================
+        // 初始化
+        // ============================================================
+        function init() {
+            fetchSoldOutStatus();
+            syncSoldOutFromServer();
+            renderMenu();
+            updateAllUI();
+
+            var header = document.getElementById('mainHeader');
+            var headerHeight = header.getBoundingClientRect().height;
+            document.querySelector('.category-wrapper').style.top = headerHeight + 'px';
+
+            window.addEventListener('scroll', handleScroll);
+            window.addEventListener('touchmove', handleScroll);
+
+            var tabs = document.querySelectorAll('.category-tab');
+            for (var i = 0; i < tabs.length; i++) {
+                (function(tab) {
+                    tab.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        var targetId = this.getAttribute('href').substring(1);
+                        var targetEl = document.getElementById(targetId);
+                        if (targetEl) {
+                            var catWrapper = document.querySelector('.category-wrapper');
+                            var catHeight = catWrapper.getBoundingClientRect().height;
+                            var headerRect = document.getElementById('mainHeader').getBoundingClientRect();
+                            var offset = headerRect.height + catHeight + 10;
+                            var targetPos = targetEl.getBoundingClientRect().top + window.pageYOffset - offset;
+                            window.scrollTo({ top: targetPos, behavior: 'smooth' });
+                        }
+                        var allTabs = document.querySelectorAll('.category-tab');
+                        for (var j = 0; j < allTabs.length; j++) {
+                            allTabs[j].classList.remove('active');
+                        }
+                        this.classList.add('active');
+                        setTimeout(updateActiveCategory, 300);
+                    });
+                })(tabs[i]);
+            }
+
+            setInterval(syncSoldOutFromServer, 10000);
+            setTimeout(updateActiveCategory, 200);
+        }
+
+        init();
+    </script>
+
+</body>
+</html>
