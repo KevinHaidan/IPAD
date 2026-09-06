@@ -1675,97 +1675,111 @@
         // ============================================================
         // 確認點餐
         // ============================================================
-        document.getElementById('submitOrderBtn').addEventListener('click', function() {
-            if (Object.keys(cart).length === 0) return;
+document.getElementById('submitOrderBtn').addEventListener('click', function() {
+    if (Object.keys(cart).length === 0) return;
 
-            if (!selectedDining) {
-                alert('⚠️ 請先選擇用餐方式（桌號 / 內用 / 外帶）');
-                return;
-            }
+    if (!selectedDining) {
+        alert('⚠️ 請先選擇用餐方式（桌號 / 內用 / 外帶）');
+        return;
+    }
 
-            orderRemark = document.getElementById('orderRemark').value;
+    orderRemark = document.getElementById('orderRemark').value;
 
-            var items = {};
-            var keys = Object.keys(cart);
-            for (var i = 0; i < keys.length; i++) {
-                items[keys[i]] = cart[keys[i]];
-            }
+    var items = {};
+    var keys = Object.keys(cart);
+    for (var i = 0; i < keys.length; i++) {
+        items[keys[i]] = cart[keys[i]];
+    }
 
-            var totalPrice = 0;
-            for (var j = 0; j < keys.length; j++) {
-                var id = keys[j];
-                var item = null;
-                for (var k = 0; k < menuData.length; k++) {
-                    if (menuData[k].id === parseInt(id, 10)) { item = menuData[k]; break; }
+    var totalPrice = 0;
+    for (var j = 0; j < keys.length; j++) {
+        var id = keys[j];
+        var item = null;
+        for (var k = 0; k < menuData.length; k++) {
+            if (menuData[k].id === parseInt(id, 10)) { item = menuData[k]; break; }
+        }
+        if (item) totalPrice += item.price * cart[id];
+    }
+
+    // 🔧 將用餐方式轉換為桌號數字
+    var tableNumber = selectedDining;
+    if (selectedDining === '內用') {
+        tableNumber = 13;
+    } else if (selectedDining === '外帶') {
+        tableNumber = 14;
+    } else if (!isNaN(selectedDining) && selectedDining >= 1 && selectedDining <= 12) {
+        tableNumber = parseInt(selectedDining, 10);
+    }
+
+    var orderData = {
+        table: tableNumber,
+        items: items,
+        total: totalPrice,
+        remark: orderRemark,
+        diningType: selectedDining
+    };
+
+    fetch(API_URL + '/order', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'ngrok-skip-browser-warning': 'true'
+        },
+        body: JSON.stringify(orderData)
+    })
+    .then(function(res) { return res.json(); })
+    .then(function(data) {
+        if (data.success) {
+            // ✅ 儲存訂單資訊
+            lastOrderId = data.orderId;
+            lastOrderItems = [];
+            var cartKeys = Object.keys(cart);
+            for (var m = 0; m < cartKeys.length; m++) {
+                var id2 = cartKeys[m];
+                var item2 = null;
+                for (var n = 0; n < menuData.length; n++) {
+                    if (menuData[n].id === parseInt(id2, 10)) { item2 = menuData[n]; break; }
                 }
-                if (item) totalPrice += item.price * cart[id];
-            }
-
-            var orderData = {
-                table: selectedDining,
-                items: items,
-                total: totalPrice,
-                remark: orderRemark,
-                diningType: selectedDining
-            };
-
-            fetch(API_URL + '/order', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
-                },
-                body: JSON.stringify(orderData)
-            })
-            .then(function(res) { return res.json(); })
-            .then(function(data) {
-                if (data.success) {
-                    lastOrderId = data.orderId;
-                    lastOrderItems = [];
-                    var cartKeys = Object.keys(cart);
-                    for (var m = 0; m < cartKeys.length; m++) {
-                        var id2 = cartKeys[m];
-                        var item2 = null;
-                        for (var n = 0; n < menuData.length; n++) {
-                            if (menuData[n].id === parseInt(id2, 10)) { item2 = menuData[n]; break; }
-                        }
-                        if (item2) {
-                            lastOrderItems.push({
-                                name: item2.name,
-                                qty: cart[id2],
-                                price: item2.price
-                            });
-                        }
-                    }
-                    lastOrderTotal = totalPrice;
-                    lastOrderRemark = orderRemark;
-                    lastDiningOption = selectedDining;
-
-                    cart = {};
-                    orderRemark = '';
-                    selectedDining = '';
-                    document.getElementById('orderRemark').value = '';
-
-                    var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
-                    for (var p = 0; p < allBtns.length; p++) {
-                        allBtns[p].classList.remove('active');
-                    }
-                    document.getElementById('selectedDiningLabel').textContent = '桌號';
-
-                    updateAllUI();
-                    renderMenu();
-                    closeCartPage();
-
-                    showConfirmPage();
-                } else {
-                    alert('❌ 訂單送出失敗，請稍後再試');
+                if (item2) {
+                    lastOrderItems.push({
+                        name: item2.name,
+                        qty: cart[id2],
+                        price: item2.price
+                    });
                 }
-            })
-            .catch(function(error) {
-                alert('❌ 連線失敗，請確認網路連線');
-                console.log('錯誤:', error);
-            });
-        });
+            }
+            lastOrderTotal = totalPrice;
+            lastOrderRemark = orderRemark;
+            lastDiningOption = selectedDining;
+
+            // 清空購物車
+            cart = {};
+            orderRemark = '';
+            selectedDining = '';
+            document.getElementById('orderRemark').value = '';
+
+            var allBtns = document.querySelectorAll('#diningOptionsGrid .dining-btn');
+            for (var p = 0; p < allBtns.length; p++) {
+                allBtns[p].classList.remove('active');
+            }
+            document.getElementById('selectedDiningLabel').textContent = '桌號';
+
+            updateAllUI();
+            renderMenu();
+            closeCartPage();
+
+            // 顯示確認頁
+            showConfirmPage();
+
+        } else {
+            alert('❌ 訂單送出失敗，請稍後再試');
+        }
+    })
+    .catch(function(error) {
+        alert('❌ 連線失敗，請確認網路連線');
+        console.log('錯誤:', error);
+    });
+});
 
         function showConfirmPage() {
             var page = document.getElementById('orderConfirmPage');
