@@ -5,6 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>手機點餐</title>
     <style>
+
+       /* iOS 9 相容 flexbox */
+.menu-item {
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: flex;
+    -webkit-box-align: center;
+    -webkit-align-items: center;
+    align-items: center;
+}
+
+.menu-item-image {
+    -webkit-flex: 0 0 72px;
+    flex: 0 0 72px;
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    overflow: hidden;
+    background-color: #e8e4de;
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+}
+        
         * {
             margin: 0;
             padding: 0;
