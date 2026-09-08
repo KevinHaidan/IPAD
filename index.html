@@ -1452,10 +1452,7 @@
                     var addDisabled = isSoldOut ? 'disabled' : '';
 
                     html += '<div class="menu-item ' + soldOutClass + '">';
-                    html += '<div class="menu-item-image">
-    <img src="images/${item.name}.png" alt="${item.name}" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
-    <span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:28px;">📷</span>
-</div>';
+                    html += '<div class="menu-item-image"><span>📷</span></div>';
                     html += '<div class="menu-item-info">';
                     html += '<div class="menu-item-name">' + item.name;
                     if (isSoldOut) html += '<span class="sold-out-badge">售完</span>';
