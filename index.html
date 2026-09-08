@@ -1451,12 +1451,13 @@ function renderMenu() {
             var soldOutClass = isSoldOut ? 'sold-out' : '';
             var addDisabled = isSoldOut ? 'disabled' : '';
 
-            // ✅ 最簡單的寫法
-            var imgSrc = 'images/' + item.name + '.png';
+            // ✅ 改用 id 當檔名（相容性最好）
+            var imgSrc = 'images/' + item.id + '.png';
 
             html += '<div class="menu-item ' + soldOutClass + '">';
             html += '<div class="menu-item-image">';
-            html += '<img src="' + imgSrc + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\'">';
+            html += '<img src="' + imgSrc + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'span\').style.display=\'flex\'">';
+            html += '<span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:28px;">📷</span>';
             html += '</div>';
             html += '<div class="menu-item-info">';
             html += '<div class="menu-item-name">' + item.name;
