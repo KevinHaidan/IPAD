@@ -1451,9 +1451,12 @@ function renderMenu() {
             var soldOutClass = isSoldOut ? 'sold-out' : '';
             var addDisabled = isSoldOut ? 'disabled' : '';
 
+            // ✅ 改用傳統字串組合，避開 encodeURIComponent 問題
+            var imgSrc = 'images/' + item.name + '.png';
+
             html += '<div class="menu-item ' + soldOutClass + '">';
             html += '<div class="menu-item-image">';
-            html += '<img src="images/' + encodeURIComponent(item.name) + '.png" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.nextElementSibling.style.display=\'flex\'">';
+            html += '<img src="' + imgSrc + '" alt="' + item.name + '" style="width:100%;height:100%;object-fit:cover;" onerror="this.style.display=\'none\';this.parentNode.querySelector(\'span\').style.display=\'flex\'">';
             html += '<span style="display:none;align-items:center;justify-content:center;width:100%;height:100%;font-size:28px;">📷</span>';
             html += '</div>';
             html += '<div class="menu-item-info">';
