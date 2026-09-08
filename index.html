@@ -1476,8 +1476,8 @@ function renderMenu() {
             var soldOutClass = isSoldOut ? 'sold-out' : '';
             var addDisabled = isSoldOut ? 'disabled' : '';
 
-            // ✅ 最安全：用 id 編號，放在根目錄
-            var imgSrc = item.id + '.png';
+            // ✅ 用中文檔名
+            var imgSrc = item.name + '.png';
 
             html += '<div class="menu-item ' + soldOutClass + '">';
             html += '<div class="menu-item-image" style="background-image: url(\'' + imgSrc + '\'); background-position: center; background-size: contain; background-repeat: no-repeat; background-color: #e8e4de;"></div>';
