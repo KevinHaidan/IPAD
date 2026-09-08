@@ -1451,8 +1451,8 @@ function renderMenu() {
             var soldOutClass = isSoldOut ? 'sold-out' : '';
             var addDisabled = isSoldOut ? 'disabled' : '';
 
-            // ✅ 改成用 id 編號當檔名（保證相容！）
-            var imgSrc = 'images/' + item.id + '.png';
+            // ✅ 中文檔名 + CSS background（跟 Logo 一樣的方式）
+            var imgSrc = 'images/' + item.name + '.png';
 
             html += '<div class="menu-item ' + soldOutClass + '">';
             html += '<div class="menu-item-image" style="background: url(' + imgSrc + ') center/contain no-repeat; background-color: #e8e4de;">';
