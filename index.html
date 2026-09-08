@@ -1856,44 +1856,44 @@ document.getElementById('submitOrderBtn').addEventListener('click', function() {
         // ============================================================
         // ✅ 目錄點擊 - 精確傳送
         // ============================================================
-        function initCategoryTabs() {
-            var tabs = document.querySelectorAll('.category-tab');
-            for (var i = 0; i < tabs.length; i++) {
-                (function(tab) {
-                    tab.addEventListener('click', function(e) {
-                        e.preventDefault();
+function initCategoryTabs() {
+    var tabs = document.querySelectorAll('.category-tab');
+    for (var i = 0; i < tabs.length; i++) {
+        (function(tab) {
+            tab.addEventListener('click', function(e) {
+                e.preventDefault();
 
-                        var targetId = this.getAttribute('href').substring(1);
-                        var targetEl = document.getElementById(targetId);
+                var targetId = this.getAttribute('href').substring(1);
+                var targetEl = document.getElementById(targetId);
 
-                        if (targetEl) {
-                            // 計算偏移
-                            var header = document.getElementById('mainHeader');
-                            var catWrapper = document.querySelector('.category-wrapper');
-                            var headerHeight = header.getBoundingClientRect().height;
-                            var catHeight = catWrapper.getBoundingClientRect().height;
-                            var offset = headerHeight + catHeight + 10;
+                if (targetEl) {
+                    // 計算偏移
+                    var header = document.getElementById('mainHeader');
+                    var catWrapper = document.querySelector('.category-wrapper');
+                    var headerHeight = header.getBoundingClientRect().height;
+                    var catHeight = catWrapper.getBoundingClientRect().height;
+                    var offset = headerHeight + catHeight + 10;
 
-                            var targetRect = targetEl.getBoundingClientRect();
-                            var targetPos = targetRect.top + window.pageYOffset - offset;
+                    var targetRect = targetEl.getBoundingClientRect();
+                    var targetPos = targetRect.top + window.pageYOffset - offset;
 
-                            window.scrollTo({
-                                top: targetPos,
-                                behavior: 'smooth'
-                            });
+                    // ✅ iOS 9 相容：用 window.scrollTo 立即跳轉（不用 smooth）
+                    window.scrollTo(0, targetPos);
 
-                            var allTabs = document.querySelectorAll('.category-tab');
-                            for (var j = 0; j < allTabs.length; j++) {
-                                allTabs[j].classList.remove('active');
-                            }
-                            this.classList.add('active');
+                    // 更新 active 狀態
+                    var allTabs = document.querySelectorAll('.category-tab');
+                    for (var j = 0; j < allTabs.length; j++) {
+                        allTabs[j].classList.remove('active');
+                    }
+                    this.classList.add('active');
 
-                            setTimeout(updateActiveCategory, 500);
-                        }
-                    });
-                })(tabs[i]);
-            }
-        }
+                    // 延遲更新 active 分類
+                    setTimeout(updateActiveCategory, 300);
+                }
+            });
+        })(tabs[i]);
+    }
+}
 
         // ============================================================
         // 初始化
