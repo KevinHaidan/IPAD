@@ -1451,11 +1451,11 @@ function renderMenu() {
             var soldOutClass = isSoldOut ? 'sold-out' : '';
             var addDisabled = isSoldOut ? 'disabled' : '';
 
-            // ✅ 移除 images/ 路徑，直接放在根目錄
+            // ✅ iOS 9 最相容寫法：直接用內聯樣式 + 圖片在根目錄
             var imgSrc = item.name + '.png';
 
             html += '<div class="menu-item ' + soldOutClass + '">';
-            html += '<div class="menu-item-image" style="background: url(' + imgSrc + ') center/contain no-repeat; background-color: #e8e4de; background-size: cover;">';
+            html += '<div class="menu-item-image" style="background-image: url(\'' + imgSrc + '\'); background-position: center; background-size: contain; background-repeat: no-repeat; background-color: #e8e4de;">';
             html += '</div>';
             html += '<div class="menu-item-info">';
             html += '<div class="menu-item-name">' + item.name;
