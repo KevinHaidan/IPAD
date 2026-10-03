@@ -1111,6 +1111,7 @@
             <a href="#cat-湯品" class="category-tab" data-category="湯品">湯品</a>
             <a href="#cat-主食" class="category-tab" data-category="主食">主食</a>
             <a href="#cat-飲品" class="category-tab" data-category="飲品">飲品</a>
+            <a href="#cat-咖啡" class="category-tab" data-category="咖啡">咖啡</a>
 
             <!-- 用餐按鈕 -->
             <div class="dining-dropdown-wrapper">
@@ -1255,7 +1256,9 @@
         }
 
         // ============================================================
-        // 菜單資料
+        // 菜單資料（顧客端）
+        // - 瓶裝飲料（id 49~54）不上架，客端不顯示
+        // - 咖啡為新分類
         // ============================================================
         var menuData = [
             { id: 1, name: '脆皮櫻桃鴨 (半隻)', desc: '外皮酥脆，肉質鮮嫩', price: 600, category: '招牌必點' },
@@ -1295,22 +1298,36 @@
             { id: 35, name: '雙蛋牛肉炒飯', desc: '牛肉香氣，粒粒分明', price: 160, category: '主食' },
             { id: 36, name: '雙蛋蝦仁炒飯', desc: '鮮甜蝦仁，鍋氣十足', price: 160, category: '主食' },
             { id: 37, name: '白飯', desc: '台灣好米，香Q可口', price: 10, category: '主食' },
-            { id: 38, name: '紅茶', desc: '經典古早味紅茶', price: 80, category: '飲品' },
-            { id: 39, name: '奶茶', desc: '香濃滑順奶茶', price: 80, category: '飲品' },
-            { id: 40, name: '柳橙汁', desc: '新鮮現榨柳橙汁', price: 80, category: '飲品' },
-            { id: 41, name: '美式咖啡', desc: '香醇美式咖啡', price: 100, category: '飲品' },
-            { id: 42, name: '拿鐵咖啡', desc: '濃郁拿鐵，奶香十足', price: 120, category: '飲品' },
-            { id: 46, name: '麥芽牛乳', desc: '香濃麥芽，經典風味', price: 50, category: '飲品' },
-            { id: 47, name: '巧克力牛乳', desc: '濃郁巧克力，香甜順口', price: 50, category: '飲品' },
-            { id: 43, name: '瓶裝飲料(小)', desc: '', price: 30, category: '飲品' },
-            { id: 44, name: '瓶裝飲料(中)', desc: '', price: 40, category: '飲品' },
-            { id: 45, name: '瓶裝飲料(大)', desc: '', price: 60, category: '飲品' },
-            { id: 48, name: '台灣啤酒', price: 90, category: '飲品' },
-            { id: 49, name: '百威啤酒', price: 120, category: '飲品' },
-            { id: 50, name: '雪山啤酒', price: 120, category: '飲品' },
+
+            // ===== 飲品（新順序） =====
+            { id: 38, name: '英式紅茶(冰)', desc: '經典古早味紅茶', price: 80, category: '飲品' },
+            { id: 39, name: '英式紅茶(熱)', desc: '經典古早味紅茶', price: 80, category: '飲品' },
+            { id: 40, name: '紅茶鮮奶茶(冰)', desc: '紅茶加鮮奶，香濃滑順', price: 120, category: '飲品' },
+            { id: 41, name: '紅茶鮮奶茶(熱)', desc: '紅茶加鮮奶，香濃滑順', price: 120, category: '飲品' },
+            { id: 42, name: '柳橙汁(冰)', desc: '新鮮現榨柳橙汁', price: 80, category: '飲品' },
+            { id: 43, name: '可爾必思(冰)', desc: '酸甜乳酸菌飲', price: 80, category: '飲品' },
+            { id: 44, name: '麥芽牛乳(冰)', desc: '香濃麥芽，經典風味', price: 50, category: '飲品' },
+            { id: 45, name: '巧克力牛乳(冰)', desc: '濃郁巧克力，香甜順口', price: 50, category: '飲品' },
+            { id: 46, name: '台灣啤酒', desc: '', price: 90, category: '飲品' },
+            { id: 47, name: '百威啤酒', desc: '', price: 120, category: '飲品' },
+            { id: 48, name: '雪山啤酒', desc: '', price: 120, category: '飲品' },
+
+            // ===== 咖啡（新分類） =====
+            { id: 55, name: '美式咖啡(冰)', desc: '香醇美式咖啡', price: 100, category: '咖啡' },
+            { id: 56, name: '美式咖啡(熱)', desc: '香醇美式咖啡', price: 100, category: '咖啡' },
+            { id: 57, name: '拿鐵咖啡(冰)', desc: '濃郁拿鐵，奶香十足', price: 120, category: '咖啡' },
+            { id: 58, name: '拿鐵咖啡(熱)', desc: '濃郁拿鐵，奶香十足', price: 120, category: '咖啡' },
+            { id: 59, name: '香草風味拿鐵(冰)', desc: '香草香氣，溫潤順口', price: 140, category: '咖啡' },
+            { id: 60, name: '香草風味拿鐵(熱)', desc: '香草香氣，溫潤順口', price: 140, category: '咖啡' },
+            { id: 61, name: '榛果風味拿鐵(冰)', desc: '榛果香氣，濃醇滑順', price: 140, category: '咖啡' },
+            { id: 62, name: '榛果風味拿鐵(熱)', desc: '榛果香氣，濃醇滑順', price: 140, category: '咖啡' },
+            { id: 63, name: '太妃風味拿鐵(冰)', desc: '太妃糖香，甜潤迷人', price: 140, category: '咖啡' },
+            { id: 64, name: '太妃風味拿鐵(熱)', desc: '太妃糖香，甜潤迷人', price: 140, category: '咖啡' },
+            { id: 65, name: '焦糖瑪奇朵(冰)', desc: '焦糖香甜，層次豐富', price: 160, category: '咖啡' },
+            { id: 66, name: '焦糖瑪奇朵(熱)', desc: '焦糖香甜，層次豐富', price: 160, category: '咖啡' },
         ];
 
-        var categories = ['招牌必點', '經典料理', '高山蔬菜', '炸物小點', '湯品', '主食', '飲品'];
+        var categories = ['招牌必點', '經典料理', '高山蔬菜', '炸物小點', '湯品', '主食', '飲品', '咖啡'];
 
         var cart = {};
         var orderRemark = '';
